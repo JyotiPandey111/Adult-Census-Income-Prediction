@@ -24,4 +24,28 @@ Approach: The classical machine learning tasks like Data Exploration, Data Clean
 Before we run the project, make sure that you are having MongoDB in your local system, with Compass since we are using MongoDB for data storage. You also need AWS account to access the service like S3, ECR and EC2 instances.
 
 ## Data Collections
-[Link to the Dataset]#(https://www.kaggle.com/datasets/overload10/adult-census-dataset)
+Link to the Dataset: (https://www.kaggle.com/datasets/overload10/adult-census-dataset)
+
+## Project Archietecture
+
+## Deployment Archietecture
+
+### Step 1: Clone the repository
+```bash
+git clone https://github.com/sethusaim/Sensor-Fault-Detection.git
+```
+
+### Step 2- Create a conda environment after opening the repository
+
+```bash
+conda create -n sensor python=3.7.6 -y
+```
+
+```bash
+conda activate sensor
+```
+
+### Step 3 - Install the requirements
+```bash
+pip install -r requirements.txt
+```
