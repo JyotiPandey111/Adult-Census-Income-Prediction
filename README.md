@@ -32,7 +32,7 @@ Link to the Dataset: (https://www.kaggle.com/datasets/overload10/adult-census-da
 
 ### Step 1: Clone the repository
 ```bash
-git clone https://github.com/sethusaim/Sensor-Fault-Detection.git
+git clone https://github.com/JyotiPandey111/Adult-Census-Income-Prediction.git
 ```
 
 ### Step 2- Create a conda environment after opening the repository
@@ -42,7 +42,7 @@ conda create -n sensor python=3.7.6 -y
 ```
 
 ```bash
-conda activate sensor
+conda activate env
 ```
 
 ### Step 3 - Install the requirements
