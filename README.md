@@ -42,11 +42,11 @@ git clone https://github.com/JyotiPandey111/Adult-Census-Income-Prediction.git
 ### Step 2- Create a conda environment after opening the repository
 
 ```bash
-conda create -n sensor python=3.7.6 -y
+conda create -n venv python=3.7.6 -y
 ```
 
 ```bash
-conda activate env
+conda activate venv
 ```
 
 ### Step 3 - Install the requirements
