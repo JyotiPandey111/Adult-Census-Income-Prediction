@@ -2,9 +2,6 @@
 import pymongo
 from income.constant.database import DATABASE_NAME
 from income.constant.env_variable import MONGODB_URL_KEY
-
-print("---------",MONGODB_URL_KEY,"----------------\n\n")
-
 import certifi
 import os
 
