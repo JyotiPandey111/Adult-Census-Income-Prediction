@@ -1,0 +1,22 @@
+"""
+columns:
+
+  - class: category
+  - aa_000: int
+  
+
+numerical_columns:
+  - aa_000
+  - ac_000
+  - ad_000
+  - ae_000
+  
+
+drop_columns:
+  - br_000
+  - bq_000
+  - bp_000
+  - ab_000
+  
+
+"""
