@@ -3,7 +3,7 @@ import os,sys
 from income.exception import IncomeException
 from income.logger import logging
 from income.entity.config_entity import TrainingPipelineConfig, DataIngestionConfig
-
+from income.pipeline.training_pipeline import TrainPipeline
 
 
 '''#Function for checking is exception and logging  working or not.
@@ -19,6 +19,7 @@ def test_exception():
 
 if __name__ == '__main__':
 
+    
 
 
 
