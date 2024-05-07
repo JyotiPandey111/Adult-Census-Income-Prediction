@@ -1,22 +1,43 @@
-"""
+
 columns:
 
-  - class: category
-  - aa_000: int
+  #- class: category
+  #- aa_000: int
+
+  - age: int
+  - workclass: category
+  - fnlwgt: int
+  - education: category
+  - education-num: int
+  - marital-status: category
+  - occupation: category
+  - relationship: category
+  - race: category
+  - sex: category
+  - capital-gain: int
+  - capital-loss: int
+  - hours-per-week: int
+  - country: category
+  - salary': categoty
   
 
 numerical_columns:
-  - aa_000
-  - ac_000
-  - ad_000
-  - ae_000
+  - age
+  - fnlwgt
+  - education-num
+  - capital-gain
+  - capital-loss
+  - hours-per-week
+
+  #- aa_000
+  #- ac_000
+  #- ad_000
+  #- ae_000
   
+
+
 
 drop_columns:
-  - br_000
-  - bq_000
-  - bp_000
-  - ab_000
-  
+# - br_000
+# - bq_000
 
-"""
