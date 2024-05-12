@@ -7,7 +7,14 @@ import numpy as np
 import dill
 
 def read_yaml_file(file_path: str) -> dict:
-    """
+    """Read a YAML file
+
+    Args:
+        file_path (str): location of the YAML file
+
+    Raises:
+        IncomeException: custome exception
+
     """
     try:
         with open(file_path, "rb") as yaml_file:
@@ -17,6 +24,13 @@ def read_yaml_file(file_path: str) -> dict:
 
 
 def write_yaml_file(file_path: str, content: object, replace: bool = False) -> None:
+    """Write a YAML file
+
+    Args:
+        file_path (str): location of the YAML file
+        content (object): content to write in YAML file
+        
+    """
     try:
         if replace:
             if os.path.exists(file_path):
@@ -26,6 +40,8 @@ def write_yaml_file(file_path: str, content: object, replace: bool = False) -> N
             yaml.dump(content, file)
     except Exception as e:
         raise IncomeException(e, sys)
+
+
 
 
 
@@ -44,6 +60,7 @@ def save_numpy_array_data(file_path: str, array: np.array):
         raise IncomeException(e, sys) from e
 
 
+
 def load_numpy_array_data(file_path: str) -> np.array:
     """
     load numpy array data from file
@@ -57,6 +74,7 @@ def load_numpy_array_data(file_path: str) -> np.array:
         raise IncomeException(e, sys) from e
 
 
+
 def save_object(file_path: str, obj: object) -> None:
     try:
         logging.info("Entered the save_object method of MainUtils class")
@@ -66,6 +84,7 @@ def save_object(file_path: str, obj: object) -> None:
         logging.info("Exited the save_object method of MainUtils class")
     except Exception as e:
         raise IncomeException(e, sys) from e
+
 
 
 def load_object(file_path: str, ) -> object:
