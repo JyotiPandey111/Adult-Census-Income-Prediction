@@ -1,9 +1,7 @@
 
 columns:
-
   #- class: category
   #- aa_000: int
-
   - age: int
   - workclass: category
   - fnlwgt: int
@@ -18,13 +16,11 @@ columns:
   - capital-loss: int
   - hours-per-week: int
   - country: category
-  - salary': categoty
+  - salary: categoty
   
 
 numerical_columns:
   - age
-  - fnlwgt
-  - education-num
   - capital-gain
   - capital-loss
   - hours-per-week
@@ -35,9 +31,87 @@ numerical_columns:
   #- ae_000
   
 
+ columns_nan:
+  - occupation        
+  - workclass         
+  - country
+
+
+correlation_columns:
+  - capital-loss
+  - capital-gain
+  - hours-per-week
+  - age
+  
+
+categorical_columns:
+  - age
+  - workclass
+  - education
+  - marital-status
+  - occupation
+  - relationship
+  - race
+  - sex
+  - capital-gain
+  - capital-loss
+  - hours-per-week
+  - country
+
+nominal_columns:
+  - marital-status
+  - relationship
+  - race
+  - sex
+  - country
+  - occupation
+  - workclass
+
+nominal_one_hot_encoding:  
+  - relationship
+  - race
+  - sex
+  - country, 
+                
+nominal_one_hot_encoding_top_x: 
+ - marital-status
+ - occupation
+ - workclass
+
+ordinal_columns:
+  - education
+  - age
+  - hours-per-week
+  - capital_gain
+  - capital_loss
+
 
 
 drop_columns:
+  - fnlwgt
+  - education-num
 # - br_000
 # - bq_000
 
+
+corr_features_spearman_list:
+  - occupation_ Protective-serv
+  - race_ White
+  - workclass_ State-gov
+  - education_ordinal
+  - marital-status_ Divorced
+  - hours-per-week_ordinal
+  - age_ordinal
+  - country_ United-States
+  - relationship_ Wife
+  - workclass_Missing
+  - workclass_ Federal-gov
+  - marital-status_ Never-married
+  - occupation_Missing
+  - workclass_ Local-gov
+  - occupation_ Adm-clerical
+  - marital-status_ Married-civ-spouse
+  - relationship_ Unmarried
+  - country_Rare_var
+  - workclass_ Self-emp-inc
+  - workclass_ Self-emp-not-inc
