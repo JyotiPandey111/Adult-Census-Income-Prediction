@@ -2,8 +2,9 @@ import os
 from income.constant.s3_bucket import TRAINING_BUCKET_NAME
 
 SAVED_MODEL_DIR =os.path.join("saved_models")
+
 # defining common constant variable for training pipeline
-TARGET_COLUMN = "class"
+TARGET_COLUMN = "salary"
 PIPELINE_NAME: str = "income"
 ARTIFACT_DIR: str = "artifact"
 FILE_NAME: str = "income.csv"
@@ -40,6 +41,7 @@ DATA_VALIDATION_DRIFT_REPORT_DIR: str = "drift_report"
 DATA_VALIDATION_DRIFT_REPORT_FILE_NAME: str = "report.yaml"
 
 
+
 """
 Data Transformation ralated constant start with DATA_TRANSFORMATION VAR NAME
 """
@@ -47,6 +49,8 @@ Data Transformation ralated constant start with DATA_TRANSFORMATION VAR NAME
 DATA_TRANSFORMATION_DIR_NAME: str = "data_transformation"
 DATA_TRANSFORMATION_TRANSFORMED_DATA_DIR: str = "transformed"
 DATA_TRANSFORMATION_TRANSFORMED_OBJECT_DIR: str = "transformed_object"
+
+
 
 """
 Model Trainer ralated constant start with MODE TRAINER VAR NAME
