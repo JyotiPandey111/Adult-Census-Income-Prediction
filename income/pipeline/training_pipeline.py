@@ -107,6 +107,7 @@ class TrainPipeline:
         except Exception as e:
             raise IncomeException(e,sys)
 
+
     def run_pipeline(self):
         try:
             
