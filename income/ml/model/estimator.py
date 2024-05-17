@@ -267,7 +267,11 @@ class IncomeModel:
             raise e
     
 
+
 class ModelResolver:
+    '''
+    Gives us the the best model
+    '''
 
     def __init__(self,model_dir=SAVED_MODEL_DIR):
         try:
@@ -275,8 +279,11 @@ class ModelResolver:
 
         except Exception as e:
             raise e
-
+ 
     def get_best_model_path(self,)->str:
+        '''
+        To get the Latest timestamp model
+        '''
         try:
             timestamps = list(map(int,os.listdir(self.model_dir)))
             latest_timestamp = max(timestamps)
@@ -286,6 +293,9 @@ class ModelResolver:
             raise e
 
     def is_model_exists(self)->bool:
+        '''
+        to get the model path which is going to save
+        '''
         try:
             if not os.path.exists(self.model_dir):
                 return False
@@ -302,3 +312,4 @@ class ModelResolver:
             return True
         except Exception as e:
             raise e
+        
