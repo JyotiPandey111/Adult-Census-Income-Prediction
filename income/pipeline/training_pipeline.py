@@ -73,6 +73,7 @@ class TrainPipeline:
         except  Exception as e:
             raise  IncomeException(e,sys)
 
+
     def start_model_evaluation(self,data_validation_artifact:DataValidationArtifact,
                                  model_trainer_artifact:ModelTrainerArtifact,
                                 ):
@@ -84,6 +85,7 @@ class TrainPipeline:
         except  Exception as e:
             raise  IncomeException(e,sys)
 
+
     def start_model_pusher(self,model_eval_artifact:ModelEvaluationArtifact):
         try:
             model_pusher_config = ModelPusherConfig(training_pipeline_config=self.training_pipeline_config)
@@ -92,6 +94,7 @@ class TrainPipeline:
             return model_pusher_artifact
         except  Exception as e:
             raise  IncomeException(e,sys)
+        
 
     def sync_artifact_dir_to_s3(self):
         try:
@@ -121,7 +124,9 @@ class TrainPipeline:
             if not model_eval_artifact.is_model_accepted:
                 raise Exception("Trained model is not better than the best model")
             model_pusher_artifact = self.start_model_pusher(model_eval_artifact)
+
             TrainPipeline.is_pipeline_running=False
+            
             self.sync_artifact_dir_to_s3()
             self.sync_saved_model_dir_to_s3()
         except  Exception as e:
