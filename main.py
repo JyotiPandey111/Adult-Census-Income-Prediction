@@ -63,7 +63,7 @@ async def train_route():
 @app.get("/predict")
 async def predict_route(request:Request,file: UploadFile = File(...)):
     try:
-        #get data from user csv file
+        #Code to get data from user csv file
         #conver csv file to dataframe
         df = pd.read_csv(file.file)
         model_resolver = ModelResolver(model_dir=SAVED_MODEL_DIR)
