@@ -88,6 +88,7 @@ class ModelTrainerConfig:
 
 
 
+
 class ModelEvaluationConfig:
 
     def __init__(self,training_pipeline_config:TrainingPipelineConfig):
@@ -96,6 +97,8 @@ class ModelEvaluationConfig:
         )
         self.report_file_path = os.path.join(self.model_evaluation_dir,training_pipeline.MODEL_EVALUATION_REPORT_NAME)
         self.change_threshold = training_pipeline.MODEL_EVALUATION_CHANGED_THRESHOLD_SCORE
+
+
 
 
 class ModelPusherConfig:
