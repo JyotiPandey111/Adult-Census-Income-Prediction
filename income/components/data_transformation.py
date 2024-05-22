@@ -55,7 +55,7 @@ class DataTransformation:
     @classmethod
     def get_data_transformer_object(cls)->Pipeline:
         '''
-        performing robust scaling and 
+        performing data trasformation
         '''
         try:
             #robust_scaler = RobustScaler()
@@ -79,6 +79,8 @@ class DataTransformation:
                     ]
             )
             logging.info("data transformer object created successfully")
+
+            
             return preprocessor
 
         except Exception as e:
