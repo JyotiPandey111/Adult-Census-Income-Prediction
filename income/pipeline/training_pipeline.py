@@ -96,6 +96,7 @@ class TrainPipeline:
             raise  IncomeException(e,sys)
         
 
+
     def sync_artifact_dir_to_s3(self):
         try:
             aws_buket_url = f"s3://{TRAINING_BUCKET_NAME}/artifact/{self.training_pipeline_config.timestamp}"
@@ -109,6 +110,7 @@ class TrainPipeline:
             self.s3_sync.sync_folder_to_s3(folder = SAVED_MODEL_DIR,aws_buket_url=aws_buket_url)
         except Exception as e:
             raise IncomeException(e,sys)
+
 
 
     def run_pipeline(self):
@@ -126,9 +128,12 @@ class TrainPipeline:
             model_pusher_artifact = self.start_model_pusher(model_eval_artifact)
 
             TrainPipeline.is_pipeline_running=False
-            
+
+
             self.sync_artifact_dir_to_s3()
             self.sync_saved_model_dir_to_s3()
+
+            
         except  Exception as e:
             self.sync_artifact_dir_to_s3()
             TrainPipeline.is_pipeline_running=False
