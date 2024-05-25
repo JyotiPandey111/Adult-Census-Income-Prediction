@@ -76,7 +76,7 @@ class NumericaltoCategoricalMapping:
 
     def numericaltocategorical(self):
          # Use pd.cut to convert numerical feature into categorical
-         return pd.cut(self.data[self.feature], bins=self.bins, labels=self.labels)
+         return pd.cut(self.data[self.feature], bins=self.bins, labels=self.labels,include_lowest=True)
     
     
 
@@ -144,8 +144,14 @@ class Encoding_categorical_features:
         '''
         Performs One Hot Encoding
         '''
-        self.df[self.feature]= pd.get_dummies(self.df[self.feature],drop_first=True,prefix=self.feature)
-        logging.info(f"Using One Hot Encoding for '{self.feature}' column")
+        df_dumm= pd.get_dummies(self.df[self.feature],drop_first=True,prefix=self.feature,dtype=int)
+        logging.info(f'Columns for {self.feature} are:{df_dumm.columns}')
+        self.df = pd.concat([self.df,df_dumm],axis=1)
+        self.df.drop(axis=1,columns=[self.feature],inplace=True)
+        #self.df[self.feature]
+        #logging.info(f"Using One Hot Encoding for '{self.feature}' column")
+        
+
         return self.df
 
 
@@ -159,13 +165,15 @@ class Encoding_categorical_features:
         # let's make a list with the most frequent categories of the variable
 
         top_x_labels = [y for y in self.df[self.feature].value_counts().sort_values(ascending=False).head(self.x).index]
-        logging.info(f'Top {self.x} most frequent labels are:', top_x_labels )
+        logging.info(f'Top {self.x} most frequent labels in {self.feature} are:{top_x_labels} ')
 
         for label in top_x_labels:
-            self.df[self.feature] = np.where(self.df[self.feature]==label, 1, 0)
-        
-        #df.drop(axis=1,columns=[variable],inplace=True)
+            self.df[self.feature + '_' + label] = np.where(self.df[self.feature]==label, 1, 0)
+            logging.info(f"{self.df[self.feature + '_' + label].head(5)}")
+
+        self.df.drop(axis=1,columns=[self.feature],inplace=True)
         logging.info(f"Using One Hot Encoding with Top {self.x} most frequent labels for '{self.feature}' column")
+        logging.info(f'Columns after encoding x for {self.feature} are:{self.df.columns}')
         return self.df
 
 
@@ -174,9 +182,11 @@ class Encoding_categorical_features:
         Performs frequency encoding
         '''
         freq=self.df[self.feature].value_counts().to_dict()
-        self.df[self.feature]=self.df[self.feature].map(freq)
+        self.df[self.feature + '_freq']=self.df[self.feature].map(freq)
+        logging.info(f"{self.df[self.feature + '_freq'].head(5)}")
+        self.df.drop(axis=1,columns=[self.feature],inplace=True)
         logging.info(f"Using nominal_frequency_encoding for '{self.feature}' column")
-
+        
         return self.df
 
 
@@ -186,9 +196,13 @@ class Encoding_categorical_features:
         Performs mean encoding
         '''
         mean_nominal=self.df.groupby([self.feature])[TARGET_COLUMN].mean().to_dict()
-        self.df[self.feature]=self.df[self.feature].map(mean_nominal)
-        #df.drop(axis=1,columns=[variable],inplace=True)
+        self.df[self.feature +'_mean_encoded']=self.df[self.feature].map(mean_nominal)
+
+        logging.info(f"{self.df[self.feature +'_mean_encoded'].head(5)}")
+
+        self.df.drop(axis=1,columns=[self.feature],inplace=True)
         logging.info(f"Performing Mean Encoding on '{self.feature}'column")
+        
         return self.df
 
 
@@ -207,9 +221,13 @@ class Encoding_categorical_features:
         prob_df['Probability_ratio']=prob_df[TARGET_COLUMN]/prob_df['not_'+TARGET_COLUMN]
         probability_encoded=prob_df['Probability_ratio'].to_dict()
         #print(probability_encoded)
-        self.df[self.feature]=self.df[self.feature].map(probability_encoded)
-        #df.drop(axis=1,columns=[variable],inplace=True)
+        self.df[self.feature+'_encoded']=self.df[self.feature].map(probability_encoded)
+
+        logging.info(f"{self.df[self.feature+'_encoded'].head(5)}")
+
+        self.df.drop(axis=1,columns=[self.feature],inplace=True)
         logging.info(f"Performing Probability ration encodeing on '{self.feature}' column")
+        logging.info(f'{self.df[self.feature].head(5)}')
         return self.df
 
 
@@ -219,9 +237,12 @@ class Encoding_categorical_features:
         '''
         Performs Label Encoding
         '''
-        self.df[self.feature]=self.df[self.feature].map(self.dictionary)
-        #df.drop(axis=1,columns=[variable],inplace=True)
+        self.df[self.feature+'_ordinal']=self.df[self.feature].map(self.dictionary)
+        logging.info(f"{self.df[self.feature+'_ordinal'].head(5)}")
+
+        self.df.drop(axis=1,columns=[self.feature],inplace=True)
         logging.info(f"Performimng Label Encoding on '{self.feature}' column")
+        
         return self.df
     
 
@@ -234,9 +255,12 @@ class Encoding_categorical_features:
         '''
         ordinal_labels=self.df.groupby([self.feature])[TARGET_COLUMN].mean().sort_values().index
         ordinal_labels2={k:i for i,k in enumerate(ordinal_labels,0)}
-        self.df[self.feature]=self.df[self.feature].map(ordinal_labels2)
-        #df = df.drop(axis=1,columns=[variable])
+        self.df[self.feature+'_tar_encoded']=self.df[self.feature].map(ordinal_labels2)
+        self.df.drop(axis=1,columns=[self.feature],inplace=True)
+        logging.info(f"{self.df[self.feature+'_tar_encoded'].head(5)}")
+        #self.df = self.df.drop(axis=1,columns=[variable])
         logging.info(f"Performimng Target Guided Encoding on '{self.feature}' column")
+        logging.info(f'{self.df[self.feature].head(5)}')
         return self.df
 
 

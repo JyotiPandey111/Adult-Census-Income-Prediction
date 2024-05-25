@@ -13,7 +13,7 @@ from income.components.model_trainer import ModelTrainer
 from income.components.model_evaluation import ModelEvaluation
 from income.components.model_pusher import ModelPusher
 from income.cloud_storage.s3_syncer import S3Sync
-
+# print
 
 from income.constant.s3_bucket import TRAINING_BUCKET_NAME
 from income.constant.training_pipeline import SAVED_MODEL_DIR
@@ -63,6 +63,8 @@ class TrainPipeline:
             return data_transformation_artifact
         except  Exception as e:
             raise  IncomeException(e,sys)
+    
+
     
     def start_model_trainer(self,data_transformation_artifact:DataTransformationArtifact):
         try:
@@ -133,7 +135,7 @@ class TrainPipeline:
             self.sync_artifact_dir_to_s3()
             self.sync_saved_model_dir_to_s3()
 
-            
+
         except  Exception as e:
             self.sync_artifact_dir_to_s3()
             TrainPipeline.is_pipeline_running=False

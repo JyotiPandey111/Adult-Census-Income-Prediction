@@ -7,7 +7,7 @@ import json
 from income.configuration.mongo_db_connection import MongoDBClient
 from income.constant.database import DATABASE_NAME
 from income.exception import IncomeException
-
+# print
 
 class IncomeData:
     """

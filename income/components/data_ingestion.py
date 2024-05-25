@@ -8,16 +8,21 @@ from pandas import DataFrame
 from income.data_access.income_data import IncomeData
 from income.utils.main_utils import read_yaml_file
 from income.constant.training_pipeline import SCHEMA_FILE_PATH
+from income.constant.database import DATABASE_NAME, COLLECTION_NAME
 
-
+# print
 class DataIngestion:
 
     def __init__(self,data_ingestion_config:DataIngestionConfig):
         try: 
             self.data_ingestion_config=data_ingestion_config
             self._schema_config = read_yaml_file(SCHEMA_FILE_PATH)
+            #self.data_ingestion_config.database_name = DATABASE_NAME
+            self.data_ingestion_config.collection_name = COLLECTION_NAME
         except Exception as e:
             raise IncomeException(e,sys)
+
+
 
     def export_data_into_feature_store(self) -> DataFrame:
         """
@@ -44,7 +49,7 @@ class DataIngestion:
 
         try:
             train_set, test_set = train_test_split(
-                dataframe, test_size=self.data_ingestion_config.train_test_split_ratio
+                dataframe, test_size=self.data_ingestion_config.train_test_split_ratio,random_state=0
             )
 
             logging.info("Performed train test split on the dataframe")

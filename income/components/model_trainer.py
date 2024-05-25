@@ -50,7 +50,7 @@ class ModelTrainer:
             raise e
     
 
-
+# pos_label=1
     def initiate_model_trainer(self)->ModelTrainerArtifact:
         try:
             train_file_path = self.data_transformation_artifact.transformed_train_file_path
@@ -68,11 +68,14 @@ class ModelTrainer:
             )
 
             model = self.train_model(x_train, y_train)
-
-
             y_train_pred = model.predict(x_train)
+            logging.info(f"-------------------{x_train}")
+
+            logging.info(f'y_train pred : {y_train_pred[:5]}')
+            logging.info(f'y_train : {y_train[:5]}')
             #predict probability and keep probabilities for the positive outcome only
             y_train_prob = model.predict_proba(x_train)[:,1]
+
             classification_train_metric =  get_classification_score(y_true=y_train, y_pred=y_train_pred, y_prob=y_train_prob)
             
 
@@ -81,14 +84,13 @@ class ModelTrainer:
                 raise Exception("Trained model is not good to provide expected accuracy")
             
 
-
             y_test_pred = model.predict(x_test)
+            logging.info(f'y test pred: {y_test_pred[:5]}')
+            logging.info(f'y_test : {y_train[:5]}')
             #predict probability and keep probabilities for the positive outcome only
             y_test_prob = model.predict_proba(x_test)[:,1]
 
             classification_test_metric = get_classification_score(y_true=y_test, y_pred=y_test_pred,y_prob=y_test_prob)
-
-
 
 
             #Overfitting and Underfitting

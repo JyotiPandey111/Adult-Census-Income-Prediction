@@ -99,14 +99,15 @@ class DataTransformation:
             train_df = DataTransformation.read_data(self.data_validation_artifact.valid_train_file_path)
             logging.info("read train_df successfully")
 
-            train_df[TARGET_COLUMN]= train_df[TARGET_COLUMN].replace( TargetValueMapping(neg = ' <=50K', pos = ' >50K').to_dict())
-            logging.info("traget feature train encoded successfully using TargetValueMapping")
+            train_df[TARGET_COLUMN]= train_df[TARGET_COLUMN].replace({' <=50K': 0, ' >50K': 1})
+            logging.info(f"traget feature train encoded successfully using TargetValueMapping :  {train_df[TARGET_COLUMN][:5]}")
+
 
             test_df = DataTransformation.read_data(self.data_validation_artifact.valid_test_file_path)
             logging.info('read test_df successfully')
 
-            test_df[TARGET_COLUMN]= test_df[TARGET_COLUMN].replace( TargetValueMapping(neg = ' <=50K', pos = ' >50K').to_dict())
-            logging.info("traget feature test encoded successfully using TargetValueMapping")
+            test_df[TARGET_COLUMN]= test_df[TARGET_COLUMN].replace({' <=50K': 0, ' >50K': 1})
+            logging.info(f"traget feature test encoded successfully using TargetValueMapping:  {test_df[TARGET_COLUMN][:5]}")
 
 
             preprocessor = self.get_data_transformer_object()
@@ -117,23 +118,32 @@ class DataTransformation:
 
             # handling missing values   in training "missing " category
             for fea in self._schema_config['columns_nan']:
-                train_df = Impute_Missing_Category(data = train_df, feature=fea)
+                train_df = Impute_Missing_Category(data = train_df, feature=fea).impute_nan()
             logging.info("Successfully impute missing values in training category")
 
 
 
             # Train data converting numerical features to categorical features  - capital-loss- capital-gain- hours-per-week- age
-            train_df['age'] = NumericaltoCategoricalMapping(data = train_df, feature= 'age', bins = [0,25,45,65,float('inf')], labels=['Young','Middle-aged', 'Seniors', 'Old'])
-            train_df['hours-per-week'] = NumericaltoCategoricalMapping(data = train_df, feature= 'hours-per-week', bins = [0,25,40,60,float('inf')], labels=[ 'part-time', 'full-time','over-time', 'too-much'])
-            train_df['capital-loss'] = NumericaltoCategoricalMapping(data = train_df, feature= 'capital-loss', bins = [0,1, train_df['capital-loss'].median(),float('inf')], labels=[ 'none', 'low','high'])
-            train_df['capital-gain'] = NumericaltoCategoricalMapping(data = train_df, feature= 'capital-gain', bins = [0,1, train_df['capital-gain'].median(),float('inf')], labels=[ 'none', 'low','high'])
-            logging.info('Converted numerical to categorical features in Test data')
+            train_df['age'] = NumericaltoCategoricalMapping(data = train_df, feature= 'age', bins = [0,25,45,65,float('inf')], labels=['Young','Middle-aged', 'Seniors', 'Old']).numericaltocategorical()
+            train_df['hours-per-week'] = NumericaltoCategoricalMapping(data = train_df, feature= 'hours-per-week', bins = [0,25,40,60,float('inf')], labels=[ 'part-time', 'full-time','over-time', 'too-much']).numericaltocategorical()
+
+            ###############################################################################data[data['capital-gain']>0]['capital-gain'].median()
+            logging.info(f" median is train {train_df[train_df['capital-loss']>0]['capital-loss'].median()}")
+            train_df['capital-loss'] = NumericaltoCategoricalMapping(data = train_df, feature= 'capital-loss', bins = [0,1, train_df[train_df['capital-loss']>0]['capital-loss'].median(),float('inf')], labels=[ 'none', 'low','high']).numericaltocategorical()
+            logging.info(f"capital loss: {train_df['capital-loss'].head(5)} ")
+
+            logging.info(f" median is train {train_df[train_df['capital-gain']>0]['capital-gain'].median()} ")
+            train_df['capital-gain'] = NumericaltoCategoricalMapping(data = train_df, feature= 'capital-gain', bins = [0,1, train_df[train_df['capital-gain']>0]['capital-gain'].median(),float('inf')], labels=[ 'none', 'low','high']).numericaltocategorical()
+            logging.info(f"capital gain: {train_df['capital-gain'].head(5)}  ")
+
+            logging.info('Converted numerical to categorical features in train data')
 
 
             # After converting into categorical features
             #Initialize the processor with a threshold for filtering rare categories. set threshold to 1 percentge.
-            train_df= CategoricalFeatureTransformer(data = train_df, threshold = 0.01)
+            train_df= CategoricalFeatureTransformer(data = train_df, threshold = 0.01).process_categorical_features()
             logging.info('category with less than 1% threshold created new category rare in Train data')
+            logging.info(f'Columns before Encoding are:{train_df.columns} ')
 
 
 
@@ -142,17 +152,18 @@ class DataTransformation:
                 # nominal_one_hot_encoding:  relationship, race, sex, country, 
                 # nominal_one_hot_encoding_top_x: marital-status,occupation, workclass
             for fea  in self._schema_config['nominal_one_hot_encoding']:
-                train_df= Encoding_categorical_features.nominal_one_hot_encoding(df=train_df,feature=fea)
-                logging.info(f"Successfully encoded train '{fea}' by nominal_one_hot_encoding ")
+                train_df= Encoding_categorical_features(df=train_df,feature=fea).nominal_one_hot_encoding()
+                logging.info(f'{train_df.head(5)}')
+                logging.info(f"Successfully encoded train '{fea}' by nominal_one_hot_encoding \n")
             
 
             # nominal_one_hot_encoding_top_x: marital-status,occupation, workclass
-            train_df= Encoding_categorical_features.nominal_one_hot_encoding_top_x(df=train_df,feature='marital-status', x=5)
-            logging.info(f"Successfully encoded train 'marital-status' by nominal_one_hot_encoding_top_x ")
-            train_df= Encoding_categorical_features.nominal_one_hot_encoding_top_x(df=train_df,feature='occupation', x =7)
-            logging.info(f"Successfully encoded train 'occupation 'by nominal_one_hot_encoding_top_x")
-            train_df= Encoding_categorical_features.nominal_one_hot_encoding_top_x(df=train_df,feature='workclass', x =13)
-            logging.info(f"Successfully encoded train 'workclass' by nominal_one_hot_encoding_top_x")
+            train_df= Encoding_categorical_features(df=train_df,feature='marital-status', x=5).nominal_one_hot_encoding_top_x()
+            logging.info(f"Successfully encoded train 'marital-status' by nominal_one_hot_encoding_top_x  \n")
+            train_df= Encoding_categorical_features(df=train_df,feature='occupation', x =13).nominal_one_hot_encoding_top_x()
+            logging.info(f"Successfully encoded train 'occupation 'by nominal_one_hot_encoding_top_x\n")
+            train_df= Encoding_categorical_features(df=train_df,feature='workclass', x =7).nominal_one_hot_encoding_top_x()
+            logging.info(f"Successfully encoded train 'workclass' by nominal_one_hot_encoding_top_x\n")
 
 
 
@@ -160,22 +171,22 @@ class DataTransformation:
             dictionary_edu={' Some-college':3, ' Bachelors':3, ' Assoc-acdm':2, ' 5th-6th':1, ' 11th':2,' Assoc-voc':2, 
                         ' Masters':4, ' HS-grad':2, ' Doctorate':5, ' Prof-school':2,' 10th':2, ' 7th-8th':1, 
                         'Rare_var':0, ' 9th':2, ' 12th':2}
-            train_df= Encoding_categorical_features.ordinal_label_encoding(df = train_df, feature='education',dictionary=dictionary_edu)
-            logging.info(f"Successfully encoded train 'education' by ordinal_label_encoding")
+            train_df= Encoding_categorical_features(df = train_df, feature='education',dictionary=dictionary_edu).ordinal_label_encoding()
+            logging.info(f"Successfully encoded train 'education' by ordinal_label_encoding\n")
 
             dictionary_age = {'Middle-aged': 2,'Young':1, 'Seniors':3, 'Old':4}
-            train_df= Encoding_categorical_features.ordinal_label_encoding(df = train_df, feature='age',dictionary=dictionary_age)
-            logging.info(f"Successfully encoded train 'age' by ordinal_label_encoding")
+            train_df= Encoding_categorical_features(df = train_df, feature='age',dictionary=dictionary_age).ordinal_label_encoding()
+            logging.info(f"Successfully encoded train 'age' by ordinal_label_encoding\n")
 
             dictionary_hours = {'over-time':3, 'too-much':4, 'part-time':1, 'full-time':2}
-            train_df= Encoding_categorical_features.ordinal_label_encoding(df = train_df, feature='hours-per-week',dictionary=dictionary_hours)
-            logging.info(f"Successfully encoded train 'hours-per-week' by ordinal_label_encoding")
+            train_df= Encoding_categorical_features(df = train_df, feature='hours-per-week',dictionary=dictionary_hours).ordinal_label_encoding()
+            logging.info(f"Successfully encoded train 'hours-per-week' by ordinal_label_encoding\n")
 
             dictionary_cap = {'none':0, 'low':1, 'high':2}
-            train_df= Encoding_categorical_features.ordinal_label_encoding(df = train_df, feature='capital_gain',dictionary=dictionary_cap)
-            logging.info(f"Successfully encoded train 'capital_gain' by ordinal_label_encoding")
-            train_df= Encoding_categorical_features.ordinal_label_encoding(df = train_df, feature='capital_loss',dictionary=dictionary_cap)
-            logging.info(f"Successfully encoded train 'capital_loss' by ordinal_label_encoding")
+            train_df= Encoding_categorical_features(df = train_df, feature='capital-gain',dictionary=dictionary_cap).ordinal_label_encoding()
+            logging.info(f"Successfully encoded train 'capital_gain' by ordinal_label_encoding\n")
+            train_df= Encoding_categorical_features(df = train_df, feature='capital-loss',dictionary=dictionary_cap).ordinal_label_encoding()
+            logging.info(f"Successfully encoded train 'capital_loss' by ordinal_label_encoding\n")
 
 
 #---------------------------------------------------
@@ -183,8 +194,15 @@ class DataTransformation:
             input_feature_train_df = train_df.drop(columns=[TARGET_COLUMN], axis=1)  
             target_feature_train_df = train_df[TARGET_COLUMN]
             logging.info("input_feature_train_df and traget_feature_train_df seperated successfully")
-            input_feature_train_df = train_df.drop(columns=self._schema_config['corr_features_spearman_list'], axis=1)
+            logging.info(f'Columns after encoding are:{input_feature_train_df.columns} ')
+
+            logging.info(f'--------------TRAIN INPUT DATAFRAME: {input_feature_train_df.head(5)}----------')
+            logging.info(f'--------------TRAIN TARGET DATAFRAME: {target_feature_train_df[:5]}----------')
+
+
+            input_feature_train_df = input_feature_train_df.drop(columns=self._schema_config['corr_features_spearman_list'], axis=1)
             logging.info("corr_features_spearman_list dropped from training data")
+            logging.info(f'Columns after deleting spearmen are:{input_feature_train_df.columns} ')
 
 
 
@@ -197,79 +215,96 @@ class DataTransformation:
 #----------------------------------------------------TRANSFORMING TEST DATAFRAME---------------------------------------------
 
 
-            # handling missing values   in testing "missing " category
+             # handling missing values   in test "missing " category
             for fea in self._schema_config['columns_nan']:
-                test_df = Impute_Missing_Category(data = test_df, feature=fea)
-            logging.info("Successfully Imputed missing values in testing")
-        
+                test_df = Impute_Missing_Category(data = test_df, feature=fea).impute_nan()
+            logging.info("Successfully impute missing values in test category")
 
 
 
-             # testing data converting numerical features to categorical features  - capital-loss- capital-gain- hours-per-week- age
-            test_df['age'] = NumericaltoCategoricalMapping(data = test_df, feature= 'age', bins = [0,25,45,65,float('inf')], labels=['Young','Middle-aged', 'Seniors', 'Old'])
-            test_df['hours-per-week'] = NumericaltoCategoricalMapping(data = test_df, feature= 'hours-per-week', bins = [0,25,40,60,float('inf')], labels=[ 'part-time', 'full-time','over-time', 'too-much'])
-            test_df['capital-loss'] = NumericaltoCategoricalMapping(data = test_df, feature= 'capital-loss', bins = [0,1, test_df['capital-loss'].median(),float('inf')], labels=[ 'none', 'low','high'])
-            test_df['capital-gain'] = NumericaltoCategoricalMapping(data = test_df, feature= 'capital-gain', bins = [0,1, test_df['capital-gain'].median(),float('inf')], labels=[ 'none', 'low','high'])
+            # test data converting numerical features to categorical features  - capital-loss- capital-gain- hours-per-week- age
+            test_df['age'] = NumericaltoCategoricalMapping(data = test_df, feature= 'age', bins = [0,25,45,65,float('inf')], labels=['Young','Middle-aged', 'Seniors', 'Old']).numericaltocategorical()
+            test_df['hours-per-week'] = NumericaltoCategoricalMapping(data = test_df, feature= 'hours-per-week', bins = [0,25,40,60,float('inf')], labels=[ 'part-time', 'full-time','over-time', 'too-much']).numericaltocategorical()
+
+            ###############################################################################data[data['capital-gain']>0]['capital-gain'].median()
+            logging.info(f" median is test {test_df[test_df['capital-loss']>0]['capital-loss'].median()}")
+            test_df['capital-loss'] = NumericaltoCategoricalMapping(data = test_df, feature= 'capital-loss', bins = [0,1, test_df[test_df['capital-loss']>0]['capital-loss'].median(),float('inf')], labels=[ 'none', 'low','high']).numericaltocategorical()
+            logging.info(f"capital loss: {test_df['capital-loss'].head(5)} ")
+
+            logging.info(f" median is test {test_df[test_df['capital-gain']>0]['capital-gain'].median()} ")
+            test_df['capital-gain'] = NumericaltoCategoricalMapping(data = test_df, feature= 'capital-gain', bins = [0,1, test_df[test_df['capital-gain']>0]['capital-gain'].median(),float('inf')], labels=[ 'none', 'low','high']).numericaltocategorical()
+            logging.info(f"capital gain: {test_df['capital-gain'].head(5)}  ")
+
             logging.info('Converted numerical to categorical features in Test data')
+
 
             # After converting into categorical features
             #Initialize the processor with a threshold for filtering rare categories. set threshold to 1 percentge.
-            test_df= CategoricalFeatureTransformer(data =  test_df, threshold=0.01)
-            logging.info('category with less than 1% threshold created new category rare in Test data')
+            test_df= CategoricalFeatureTransformer(data = test_df, threshold = 0.01).process_categorical_features()
+            logging.info('category with less than 1% threshold created new category rare in test data')
+            logging.info(f'Columns before Encoding are:{test_df.columns} ')
 
 
-            # Encoding the categorical features
+
             # Encoding the categorical features
             #nominal_columns:
                 # nominal_one_hot_encoding:  relationship, race, sex, country, 
                 # nominal_one_hot_encoding_top_x: marital-status,occupation, workclass
             for fea  in self._schema_config['nominal_one_hot_encoding']:
-                test_df= Encoding_categorical_features.nominal_one_hot_encoding(df=test_df,feature=fea)
-                logging.info(f"Successfully encoded test '{fea}' by nominal_one_hot_encoding ")
-
+                test_df= Encoding_categorical_features(df=test_df,feature=fea).nominal_one_hot_encoding()
+                logging.info(f'{test_df.head(5)}')
+                logging.info(f"Successfully encoded test '{fea}' by nominal_one_hot_encoding \n")
+            
 
             # nominal_one_hot_encoding_top_x: marital-status,occupation, workclass
-            test_df= Encoding_categorical_features.nominal_one_hot_encoding_top_x(df=test_df,feature='marital-status', x=5)
-            logging.info(f"Successfully encoded test 'marital-status' by nominal_one_hot_encoding_top_x ")
-            test_df= Encoding_categorical_features.nominal_one_hot_encoding_top_x(df=test_df,feature='occupation', x =7)
-            logging.info(f"Successfully encoded test 'occupation 'by nominal_one_hot_encoding_top_x")
-            test_df= Encoding_categorical_features.nominal_one_hot_encoding_top_x(df=test_df,feature='workclass', x =13)
-            logging.info(f"Successfully encoded test 'workclass' by nominal_one_hot_encoding_top_x")
+            test_df= Encoding_categorical_features(df=test_df,feature='marital-status', x=5).nominal_one_hot_encoding_top_x()
+            logging.info(f"Successfully encoded test 'marital-status' by nominal_one_hot_encoding_top_x  \n")
+            test_df= Encoding_categorical_features(df=test_df,feature='occupation', x =13).nominal_one_hot_encoding_top_x()
+            logging.info(f"Successfully encoded test 'occupation 'by nominal_one_hot_encoding_top_x\n")
+            test_df= Encoding_categorical_features(df=test_df,feature='workclass', x =7).nominal_one_hot_encoding_top_x()
+            logging.info(f"Successfully encoded test 'workclass' by nominal_one_hot_encoding_top_x\n")
+
 
 
             #ordinal_columns:education, education,age, hours-per-week, capital_gain, capital_loss
             dictionary_edu={' Some-college':3, ' Bachelors':3, ' Assoc-acdm':2, ' 5th-6th':1, ' 11th':2,' Assoc-voc':2, 
                         ' Masters':4, ' HS-grad':2, ' Doctorate':5, ' Prof-school':2,' 10th':2, ' 7th-8th':1, 
                         'Rare_var':0, ' 9th':2, ' 12th':2}
-            test_df= Encoding_categorical_features.ordinal_label_encoding(df = test_df, feature='education',dictionary=dictionary_edu)
-            logging.info(f"Successfully encoded test 'education' by ordinal_label_encoding")
+            test_df= Encoding_categorical_features(df = test_df, feature='education',dictionary=dictionary_edu).ordinal_label_encoding()
+            logging.info(f"Successfully encoded test 'education' by ordinal_label_encoding\n")
 
             dictionary_age = {'Middle-aged': 2,'Young':1, 'Seniors':3, 'Old':4}
-            test_df= Encoding_categorical_features.ordinal_label_encoding(df = test_df, feature='age',dictionary=dictionary_age)
-            logging.info(f"Successfully encoded test 'age' by ordinal_label_encoding")
+            test_df= Encoding_categorical_features(df = test_df, feature='age',dictionary=dictionary_age).ordinal_label_encoding()
+            logging.info(f"Successfully encoded test 'age' by ordinal_label_encoding\n")
 
             dictionary_hours = {'over-time':3, 'too-much':4, 'part-time':1, 'full-time':2}
-            test_df= Encoding_categorical_features.ordinal_label_encoding(df = test_df, feature='hours-per-week',dictionary=dictionary_hours)
-            logging.info(f"Successfully encoded test 'hours-per-week' by ordinal_label_encoding")
+            test_df= Encoding_categorical_features(df = test_df, feature='hours-per-week',dictionary=dictionary_hours).ordinal_label_encoding()
+            logging.info(f"Successfully encoded test 'hours-per-week' by ordinal_label_encoding\n")
 
             dictionary_cap = {'none':0, 'low':1, 'high':2}
-            test_df= Encoding_categorical_features.ordinal_label_encoding(df = test_df, feature='capital_gain',dictionary=dictionary_cap)
-            logging.info(f"Successfully encoded test 'capital_gain' by ordinal_label_encoding")
-            input_feature_test_df= Encoding_categorical_features.ordinal_label_encoding(df = input_feature_test_df, feature='capital_loss',dictionary=dictionary_cap)
-            logging.info(f"Successfully encoded test 'capital_loss' by ordinal_label_encoding")
+            test_df= Encoding_categorical_features(df = test_df, feature='capital-gain',dictionary=dictionary_cap).ordinal_label_encoding()
+            logging.info(f"Successfully encoded test 'capital_gain' by ordinal_label_encoding\n")
+            test_df= Encoding_categorical_features(df = test_df, feature='capital-loss',dictionary=dictionary_cap).ordinal_label_encoding()
+            logging.info(f"Successfully encoded test 'capital_loss' by ordinal_label_encoding\n")
 
 
-
-#-------------------------------
-             #testing dataframe
-            input_feature_test_df = test_df.drop(columns=[TARGET_COLUMN], axis=1)
+#---------------------------------------------------
+            #test dataframe
+            input_feature_test_df = test_df.drop(columns=[TARGET_COLUMN], axis=1)  
             target_feature_test_df = test_df[TARGET_COLUMN]
             logging.info("input_feature_test_df and traget_feature_test_df seperated successfully")
+            logging.info(f'Columns after encoding are:{input_feature_test_df.columns} ')
+
+            logging.info(f'{input_feature_test_df.head(5)}')
 
 
-            input_feature_test_df = test_df.drop(columns=self._schema_config['corr_features_spearman_list'], axis=1)
+            input_feature_test_df = input_feature_test_df.drop(columns=self._schema_config['corr_features_spearman_list'], axis=1)
             logging.info("corr_features_spearman_list dropped from test data")
+            logging.info(f'Columns after deleting spearmen are:{input_feature_test_df.columns} ')
 
+
+
+# --------------------------------------------Test DATAFRAME TRASFORMATION COMPLETED----------------------------------------------------------------
 
 #---------------------------
             
@@ -278,7 +313,7 @@ class DataTransformation:
 
 # ??????????????????????????????????????????????????????????????????????????????????????????????????????????????????
 
-            # SCALING   applying pipeline to training and testing data
+            # SCALING   applying pipeline to train and testing data
             preprocessor_object = preprocessor.fit(input_feature_train_df)
             
             # Randome Forest reqired no Scaling other wise comment below two lines

@@ -74,24 +74,28 @@ async def predict_route(request:Request,file: UploadFile = File(...)):
         model = load_object(file_path=best_model_path)
         y_pred = model.predict(df)
         df['predicted_column'] = y_pred
-        df['predicted_column'].replace(TargetValueMapping().reverse_mapping(),inplace=True)
+        df['predicted_column'].replace({0 : ' <=50K', 1 : ' >50K'},inplace=True)
         return df.to_html()
         #decide how to return file to user.
         
     except Exception as e:
         raise Response(f"Error Occured! {e}")
 
-# def main():
-#     try:
-#         set_env_variable(env_file_path)
-#         training_pipeline = TrainPipeline()
-#         training_pipeline.run_pipeline()
-#     except Exception as e:
-#         print(e)
-#         logging.exception(e)
+def main():
+    try:
+
+        #set_env_variable(env_file_path)
+        training_pipeline = TrainPipeline()
+        training_pipeline.run_pipeline()
+    except Exception as e:
+         print(e)
+         logging.exception(e)
 
 
 if __name__=="__main__":
-    #main()
+    # comment karo
+    main()
     # set_env_variable(env_file_path)
-    app_run(app, host=APP_HOST, port=APP_PORT)
+
+    # uncommnet karo
+    #app_run(app, host=APP_HOST, port=APP_PORT)

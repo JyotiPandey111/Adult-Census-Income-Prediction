@@ -91,9 +91,12 @@ class DataValidation:
         try:
             status=True
             report ={}
-            for column in base_df.columns:
+            numerical_columns = self._schema_config["numerical_columns"]
+            for column in numerical_columns:
+
                 d1 = base_df[column]
                 d2  = current_df[column]
+                
                 is_same_dist = ks_2samp(d1,d2)
                 if threshold<=is_same_dist.pvalue:
                     is_found=False

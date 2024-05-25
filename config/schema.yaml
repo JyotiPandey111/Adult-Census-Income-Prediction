@@ -1,12 +1,7 @@
-
 columns:
-  #- class: category
-  #- aa_000: int
   - age: int
   - workclass: category
-  - fnlwgt: int
   - education: category
-  - education-num: int
   - marital-status: category
   - occupation: category
   - relationship: category
@@ -25,13 +20,8 @@ numerical_columns:
   - capital-loss
   - hours-per-week
 
-  #- aa_000
-  #- ac_000
-  #- ad_000
-  #- ae_000
-  
 
- columns_nan:
+columns_nan:
   - occupation        
   - workclass         
   - country
@@ -71,12 +61,12 @@ nominal_one_hot_encoding:
   - relationship
   - race
   - sex
-  - country, 
+  - country 
                 
 nominal_one_hot_encoding_top_x: 
- - marital-status
- - occupation
- - workclass
+  - marital-status
+  - occupation
+  - workclass
 
 ordinal_columns:
   - education
