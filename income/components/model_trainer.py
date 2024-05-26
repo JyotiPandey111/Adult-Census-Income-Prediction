@@ -41,6 +41,7 @@ class ModelTrainer:
                                          min_samples_split=3,n_estimators=100)
             
             #xgb_clf.fit(x_train,y_train)
+            
             rfc.fit(x_train,y_train)
 
             #return xgb_clf
@@ -67,9 +68,11 @@ class ModelTrainer:
                 test_arr[:, -1],
             )
 
+            logging.info(f"MODEL TRAINING x_train: {x_train[:5]}")
+
             model = self.train_model(x_train, y_train)
             y_train_pred = model.predict(x_train)
-            logging.info(f"-------------------{x_train}")
+            
 
             logging.info(f'y_train pred : {y_train_pred[:5]}')
             logging.info(f'y_train : {y_train[:5]}')
