@@ -154,7 +154,7 @@ class ModelEvaluation:
             is_model_accepted=True
 
 
-            if not model_resolver.is_model_exists():
+            if model_resolver.is_model_exists():
                 model_evaluation_artifact = ModelEvaluationArtifact(
                     is_model_accepted=is_model_accepted, 
                     improved_accuracy=None, 

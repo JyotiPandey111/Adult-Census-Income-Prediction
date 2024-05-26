@@ -310,10 +310,15 @@ class ModelResolver:
         To get the Latest timestamp model
         '''
         try:
+            #timestamp of SAVED_MODEL_DIR: saved_model
             timestamps = list(map(int,os.listdir(self.model_dir)))
             latest_timestamp = max(timestamps)
+
+            # prepare the model path MODEL_FILE_NAME:model.pkl
             latest_model_path= os.path.join(self.model_dir,f"{latest_timestamp}",MODEL_FILE_NAME)
+            
             return latest_model_path
+        
         except Exception as e:
             raise e
 
@@ -323,7 +328,11 @@ class ModelResolver:
         '''
         try:
             if not os.path.exists(self.model_dir):
+                '''
+                folder 'saved_model' exists or not
+                '''
                 return False
+            
 
             timestamps = os.listdir(self.model_dir)
             if len(timestamps)==0:
