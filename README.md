@@ -53,3 +53,33 @@ conda activate venv
 ```bash
 pip install -r requirements.txt
 ```
+
+
+### Step 4 - SET the environment variable
+```bash
+AWS_ACCESS_KEY_ID=<AWS_ACCESS_KEY_ID>
+
+AWS_SECRET_ACCESS_KEY=<AWS_SECRET_ACCESS_KEY>
+
+AWS_DEFAULT_REGION=<AWS_DEFAULT_REGION>
+
+MONGODB_URL=<MONGODB_URL>
+
+```
+
+### Step 5 - Run the application server
+```bash
+python app.py
+```
+
+### Step 6. Train application
+```bash
+http://localhost:8080/train
+
+```
+
+### Step 7. Prediction application
+```bash
+http://localhost:8080/predict
+
+```
