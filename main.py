@@ -17,7 +17,9 @@ from uvicorn import run as app_run
 from fastapi.responses import Response
 from fastapi import FastAPI, File, Request, UploadFile
 
-from income.pipeline.prediction_pipeline import relationship
+from income.pipeline.prediction_pipeline import relationship, education
+from income.utils.main_utils import read_yaml_file
+from income.constant.training_pipeline import SCHEMA_FILE_PATH
 
 
 import os
@@ -52,13 +54,6 @@ async def index():
     return RedirectResponse(url="/docs")
 
 
-@app.get("/Project_Details")
-async def get_project(project:str):
-    return {'PROJECT NAME: Adult-Census-Income-Prediction \n ' +
-            'PROBLEM STATEMENT: The Goal is to predict whether a person has an income of more than 50K a year or not.\n' +
-            'This is basically a binary classification problem where a person is classified into the  >50K group or <=50K group.\n'+
-            'AUTHOR: Jyoti Pandey'}
-
 
 
 # decorator for train path with path operation get
@@ -90,13 +85,21 @@ async def train_route():
 #async def predict_route(request:Request,file: UploadFile = File(...)):
 
 @app.get("/predict")
-async def predict_route(feature1 : relationship):
+async def predict_route(relationship : relationship, education : education):
     try:
         #Code to get data from user csv file
-        if feature1.value == ' Unmarried':
-            return {"relationship": feature1}
-        if feature1.value == ' Husband':
-            return {"relationship": feature1}
+        schema_config = read_yaml_file(SCHEMA_FILE_PATH)
+
+        if relationship.value in schema_config['relationship'] and education.value in schema_config['education']:
+            return {
+                "relationship": relationship,
+                "education" : education
+                }
+        
+        #if education.value in schema_config['education']:
+        #    return {"education" : education}
+
+        
 
 
 
@@ -123,6 +126,8 @@ async def predict_route(feature1 : relationship):
         
         best_model_path = model_resolver.get_best_model_path()
         model = load_object(file_path=best_model_path)
+
+        # uncomment karo
         #y_pred = model.predict(df)
         #df['predicted_column'] = y_pred
         #df['predicted_column'].replace({0 : ' <=50K', 1 : ' >50K'},inplace=True)

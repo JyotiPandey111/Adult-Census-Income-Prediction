@@ -105,3 +105,89 @@ corr_features_spearman_list:
   - country_Rare_var
   - workclass_ Self-emp-inc
   - workclass_ Self-emp-not-inc
+
+
+relationship:
+  - ' Unmarried'
+  - ' Husband'
+  - ' Not-in-family'
+  - ' Own-child'
+  - ' Wife'
+  - ' Other-relative'
+
+education:
+  - ' HS-grad'
+  - ' Some-college'
+  - ' Assoc-voc'
+  - ' 11th'
+  - ' 10th'
+  - ' Bachelors'
+  - ' Assoc-acdm'
+  - ' Prof-school'
+  - ' 12th'
+  - ' Masters'
+  - ' 9th'
+  - ' 7th-8th'
+  - ' Doctorate'
+  #- 'Rare-var'
+  #- ' 1st-4th'
+  #- ' Preschool'
+  #- ' 5th-6th'
+
+
+
+workclass:
+ - ' Private'
+ - ' Self-emp-not-inc'
+ - ' Local-gov'
+ - ' State-gov'
+ - ' Self-emp-inc'
+ - ' Federal-gov'
+ - ' Without-pay'
+ - ' Never-worked'
+
+marital-status: 
+ - ' Never-married'
+ - ' Married-civ-spouse'
+ - ' Widowed'
+ - ' Divorced'
+ - ' Separated'
+ - ' Married-spouse-absent'
+ - ' Married-AF-spouse'
+
+
+occupation: 
+ - ' Other-service'
+ - ' Machine-op-inspct'
+ - ' Prof-specialty'
+ - ' Craft-repair'
+ - ' Sales'
+ - ' Transport-moving'
+ - ' Adm-clerical'
+ - ' Handlers-cleaners'
+ - ' Exec-managerial'
+ - ' Tech-support'
+ - ' Protective-serv'
+ - ' Farming-fishing'
+ - ' Priv-house-serv'
+ - ' Armed-Forces'
+
+
+race: 
+ - ' Black'
+ - ' White'
+ - ' Asian-Pac-Islander'
+
+ - 
+ - ' Amer-Indian-Eskimo'
+ - ' Other'
+
+sex:
+ - ' Female'
+ - ' Male'
+
+
+
+ 
+
+
