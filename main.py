@@ -44,7 +44,7 @@ app.add_middleware(
 
 @app.get("/", tags=["authentication"])
 async def index():
-    return RedirectResponse(url="/docs")
+    return RedirectResponse(url="/redoc")
 
 @app.get("/train")
 async def train_route():
@@ -64,7 +64,9 @@ async def train_route():
 async def predict_route(request:Request,file: UploadFile = File(...)):
     try:
         #Code to get data from user csv file
+
         #conver csv file to dataframe
+
         df = pd.read_csv(file.file)
         model_resolver = ModelResolver(model_dir=SAVED_MODEL_DIR)
         if not model_resolver.is_model_exists():
@@ -76,6 +78,7 @@ async def predict_route(request:Request,file: UploadFile = File(...)):
         df['predicted_column'] = y_pred
         df['predicted_column'].replace({0 : ' <=50K', 1 : ' >50K'},inplace=True)
         return df.to_html()
+    
         #decide how to return file to user.
         
     except Exception as e:

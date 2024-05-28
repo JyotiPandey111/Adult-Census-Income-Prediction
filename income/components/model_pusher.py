@@ -24,6 +24,7 @@ class ModelPusher:
 
     def initiate_model_pusher(self,)->ModelPusherArtifact:
         try:
+            logging.info("Initiating model pusher...")
             trained_model_path = self.model_eval_artifact.trained_model_path
             
             #Creating model pusher dir to save model
@@ -32,13 +33,16 @@ class ModelPusher:
             shutil.copy(src=trained_model_path, dst=model_file_path)
 
             #saved model dir
+            
             saved_model_path = self.model_pusher_config.saved_model_path
             os.makedirs(os.path.dirname(saved_model_path),exist_ok=True)
             shutil.copy(src=trained_model_path, dst=saved_model_path)
+            logging.info("Saved model dir")
 
             #prepare artifact
             model_pusher_artifact = ModelPusherArtifact(saved_model_path=saved_model_path, model_file_path=model_file_path)
             return model_pusher_artifact
+            
         except  Exception as e:
             raise IncomeException(e, sys)
     
