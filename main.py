@@ -17,6 +17,9 @@ from uvicorn import run as app_run
 from fastapi.responses import Response
 from fastapi import FastAPI, File, Request, UploadFile
 
+from income.pipeline.prediction_pipeline import relationship
+
+
 import os
 import pandas as pd
 
@@ -30,6 +33,7 @@ def set_env_variable(env_file_path):
         os.environ['MONGO_DB_URL']=env_config['MONGO_DB_URL']
 
 
+# creating instance of FastAPI()
 app = FastAPI()
 origins = ["*"]
 
@@ -42,11 +46,24 @@ app.add_middleware(
 )
 
 
+# decorator for "/" base path
 @app.get("/", tags=["authentication"])
 async def index():
-    return RedirectResponse(url="/redoc")
+    return RedirectResponse(url="/docs")
 
+
+@app.get("/Project_Details")
+async def get_project(project:str):
+    return {'PROJECT NAME: Adult-Census-Income-Prediction \n ' +
+            'PROBLEM STATEMENT: The Goal is to predict whether a person has an income of more than 50K a year or not.\n' +
+            'This is basically a binary classification problem where a person is classified into the  >50K group or <=50K group.\n'+
+            'AUTHOR: Jyoti Pandey'}
+
+
+
+# decorator for train path with path operation get
 @app.get("/train")
+# defining train path operation function
 async def train_route():
     try:
 
@@ -55,34 +72,75 @@ async def train_route():
             return Response("Training pipeline is already running.")
         train_pipeline.run_pipeline()
         return Response("Training successful !!")
+    
     except Exception as e:
         return Response(f"Error Occurred! {e}")
 
 
 
+
+
+
+
+
+
+
+# decorator for predict path
+#@app.get("/predict")
+#async def predict_route(request:Request,file: UploadFile = File(...)):
+
 @app.get("/predict")
-async def predict_route(request:Request,file: UploadFile = File(...)):
+async def predict_route(feature1 : relationship):
     try:
         #Code to get data from user csv file
+        if feature1.value == ' Unmarried':
+            return {"relationship": feature1}
+        if feature1.value == ' Husband':
+            return {"relationship": feature1}
+
+
+
 
         #conver csv file to dataframe
 
-        df = pd.read_csv(file.file)
+
+
+
+        #df = pd.read_csv(file.file)
+
+        # FE needed
+
+
+
+
+
+
+
+
         model_resolver = ModelResolver(model_dir=SAVED_MODEL_DIR)
         if not model_resolver.is_model_exists():
             return Response("Model is not available")
         
         best_model_path = model_resolver.get_best_model_path()
         model = load_object(file_path=best_model_path)
-        y_pred = model.predict(df)
-        df['predicted_column'] = y_pred
-        df['predicted_column'].replace({0 : ' <=50K', 1 : ' >50K'},inplace=True)
-        return df.to_html()
+        #y_pred = model.predict(df)
+        #df['predicted_column'] = y_pred
+        #df['predicted_column'].replace({0 : ' <=50K', 1 : ' >50K'},inplace=True)
+        #return df.to_html()
     
         #decide how to return file to user.
+
+
+
+
+
         
     except Exception as e:
         raise Response(f"Error Occured! {e}")
+
+
+
+
 
 def main():
     try:
