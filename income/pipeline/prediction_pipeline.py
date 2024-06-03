@@ -27,6 +27,56 @@ class education(str, Enum):
     #Preschool =  'Rare-var'
     #FirstToForthGrade = 'Rare-var'
     #FifthToSixthGrade = 'Rare-var'
+
+
+class workclass(str,Enum):
+   private = ' Private'
+   selfemp = ' Self-emp-not-inc'
+   local = ' Local-gov'
+   stategov = ' State-gov'
+   selfinc = ' Self-emp-inc'
+   federal = ' Federal-gov'
+   nopay = ' Without-pay'
+   nowork = ' Never-worked'
+
+
+
+class maritalstatus(str,Enum):
+    never = ' Never-married'
+    civ =  ' Married-civ-spouse'
+    widowed =  ' Widowed'
+    div =  ' Divorced'
+    sep =  ' Separated'
+    mar =  ' Married-spouse-absent'
+    AF =  ' Married-AF-spouse'
+
+class occupation(str,Enum): 
+   other = ' Other-service'
+   nachine = ' Machine-op-inspct'
+   spec = ' Prof-specialty'
+   craft = ' Craft-repair'
+   sales = ' Sales'
+   transport = ' Transport-moving'
+   cler = ' Adm-clerical'
+   handler = ' Handlers-cleaners'
+   manag = ' Exec-managerial'
+   tech = ' Tech-support'
+   prot = ' Protective-serv'
+   farm = ' Farming-fishing'
+   priv = ' Priv-house-serv'
+   arm = ' Armed-Forces'
+
+
+class race(str,Enum): 
+   black = ' Black'
+   white = ' White'
+   asia = ' Asian-Pac-Islander'
+   amer = ' Amer-Indian-Eskimo'
+   other = ' Other'
+
+class sex(str,Enum):
+    fe = ' Female'
+    ma = ' Male'
     
     
     
