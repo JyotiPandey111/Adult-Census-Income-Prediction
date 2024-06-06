@@ -5,7 +5,6 @@ from income.logger import logging
 from income.pipeline import training_pipeline
 from income.pipeline.training_pipeline import TrainPipeline
 import os
-from income.utils.main_utils import read_yaml_file
 from income.constant.training_pipeline import SAVED_MODEL_DIR
 from income.constant.application import APP_HOST, APP_PORT
 from income.ml.model.estimator import ModelResolver,TargetValueMapping
@@ -19,10 +18,10 @@ from fastapi import FastAPI, File, Request, UploadFile, Path
 
 from income.pipeline.prediction_pipeline import relationship, education, workclass, occupation, race,sex, maritalstatus
 from income.utils.main_utils import read_yaml_file
-from income.constant.training_pipeline import SCHEMA_FILE_PATH
+from income.constant.training_pipeline import SCHEMA_FILE_PATH, CORR_SCHEMA_FILE_PATH
 import os
 import pandas as pd
-from income.ml.model.estimator import Impute_Missing_Category, TargetValueMapping, NumericaltoCategoricalMapping,CategoricalFeatureTransformer, Encoding_categorical_features
+from income.pipeline.prediction_pipeline import Impute_Missing_Category, TargetValueMapping, NumericaltoCategoricalMapping,CategoricalFeatureTransformer, Encoding_categorical_features, Correlated_independent_feature
 
 
 env_file_path=os.path.join(os.getcwd(),"env.yaml")
@@ -88,16 +87,17 @@ async def predict_route( age : int , workclass:workclass , education : education
     try:
         #Code to get data from user csv file
         schema_config = read_yaml_file(SCHEMA_FILE_PATH)
+        corr_schema_config = read_yaml_file(CORR_SCHEMA_FILE_PATH)
         if relationship.value in schema_config['relationship'] and education.value in schema_config['education'] and maritalstatus.value in schema_config['maritalstatus'] and workclass.value in schema_config['workclass'] and occupation.value in schema_config['occupation'] and race.value in schema_config['race'] and sex.value in schema_config['sex']:
             json_data = {
                 "age" : age,
-                "workclass" : workclass,
-                "education" : education,
-                "marital-status" : maritalstatus,
-                "occupation" : occupation,
-                "relationship": relationship,
-                "race" : race,
-                "sex" : sex,
+                "workclass" : workclass.value,
+                "education" : education.value,
+                "marital-status" : maritalstatus.value,
+                "occupation" : occupation.value,
+                "relationship": relationship.value,
+                "race" : race.value,
+                "sex" : sex.value,
                 "capital-gain" : capgain,
                 "capital-loss" : caploss,
                 "hours-per-week" : hours
@@ -105,13 +105,20 @@ async def predict_route( age : int , workclass:workclass , education : education
             
             logging.info(f"\n\nDataRecord from FastAPI: {json_data} \n type is: {type(json_data)}\n all keys are : {json_data.keys()}\n items: {json_data.items()} \n race key has value: {json_data['race']} \n education key has value: {json_data['education']}")
         
-            dic_record = {k: v for k, v in json_data.items()}
+            #dict_record = {k: json_data[k] for k, v in json_data.items()}
+            dict_record = {k: json_data[k] for k in list(json_data.keys())}
 
-            logging.info(f"\n\nDataRecord after creating new dictionary: {dic_record}")
+            #for k in list(json_data.keys()):
+            #    for n in json_data.keys().values():
+            #       dict_record = {k:json_data[n]}
+
+            #dict_record = {'age':json_data['age'], 'workclass':json_data['workclass'], 'education':json_data['education'], 'marital-status':json_data['marital-status'], 'occupation':json_data['occupation'], 'relationship':json_data['relationship'], 'race':json_data['race'],'sex':json_data['sex'], 'capital-gain':json_data['capital-gain'], 'capital-loss':json_data['capital-loss'], 'hours-per-week':json_data['hours-per-week']}
+
+            logging.info(f"\n\nDataRecord after creating new dictionary: {dict_record}")
 
             #dict2 = {key:value for key, value in json_data.items() if key in required_fields}
 
-            df = pd.DataFrame(data = dic_record)
+            df = pd.DataFrame(data = dict_record, index=[0])
             logging.info(f"DataRecord: {df}")
             logging.info(f'Columns are:{df.columns} ')
 
@@ -129,16 +136,14 @@ async def predict_route( age : int , workclass:workclass , education : education
             # df data converting numerical features to categorical features  - capital-loss- capital-gain- hours-per-week- age
             df['age'] = NumericaltoCategoricalMapping(data = df, feature= 'age', bins = [0,25,45,65,float('inf')], labels=['Young','Middle-aged', 'Seniors', 'Old']).numericaltocategorical()
             df['hours-per-week'] = NumericaltoCategoricalMapping(data = df, feature= 'hours-per-week', bins = [0,25,40,60,float('inf')], labels=[ 'part-time', 'full-time','over-time', 'too-much']).numericaltocategorical()
-# train
-            ###############################################################################data[data['capital-gain']>0]['capital-gain'].median()
+
             
             df['capital-loss'] = NumericaltoCategoricalMapping(data = df, feature= 'capital-loss', bins = [0,1, 1887.0,float('inf')], labels=[ 'none', 'low','high']).numericaltocategorical()
-            logging.info(f"capital loss: {df['capital-loss'].head(5)} ")
+            
 
             
             df['capital-gain'] = NumericaltoCategoricalMapping(data = df, feature= 'capital-gain', bins = [0,1, 7298.0,float('inf')], labels=[ 'none', 'low','high']).numericaltocategorical()
-            logging.info(f"capital gain: {df['capital-gain'].head(5)}  ")
-
+            logging.info(f"df after convering numerical to categorical: {df.head(5)}  ")
             logging.info('Converted numerical to categorical features in df data')
 
 
@@ -162,11 +167,11 @@ async def predict_route( age : int , workclass:workclass , education : education
             
 
             # nominal_one_hot_encoding_top_x: marital-status,occupation, workclass
-            df= Encoding_categorical_features(df=df,feature='marital-status').nominal_one_hot_encoding()
-            logging.info(f"Successfully encoded df 'marital-status' by nominal_one_hot_encoding  \n")
-            df= Encoding_categorical_features(df=df,feature='occupation').nominal_one_hot_encoding()
+            df= Encoding_categorical_features(df=df,feature='marital-status', x=5).nominal_one_hot_encoding_top_x()
+            logging.info(f"Successfully encoded df 'marital-status' by nominal_one_hot_encoding_top_x  \n")
+            df= Encoding_categorical_features(df=df,feature='occupation', x =13).nominal_one_hot_encoding_top_x()
             logging.info(f"Successfully encoded df 'occupation 'by nominal_one_hot_encoding_top_x\n")
-            df= Encoding_categorical_features(df=df,feature='workclass').nominal_one_hot_encoding()
+            df= Encoding_categorical_features(df=df,feature='workclass', x =7).nominal_one_hot_encoding_top_x()
             logging.info(f"Successfully encoded df 'workclass' by nominal_one_hot_encoding_top_x\n")
 
 
@@ -198,7 +203,16 @@ async def predict_route( age : int , workclass:workclass , education : education
 
             logging.info(f'--------------df INPUT DATAFRAME: {df.head(5)}----------')
             
-            df = df.drop(columns=schema_config['corr_features_spearman_list'], axis=1)
+            #df = df.drop(columns=schema_config['corr_features_spearman_list'], axis=1)
+            #logging.info("corr_features_spearman_list dropped from df data")
+            #logging.info(f'Columns after deleting spearmen are:{df.columns} ')
+            #corr_features_spearman = Correlated_independent_feature(data=df, threshold=0.25, method = 'spearman').correlation()
+            #corr_features_spearman_list = []
+            #for ele in corr_features_spearman:
+            #    corr_features_spearman_list.append(ele)
+            logging.info(f"\nList of Correlated Independent Variable: {corr_schema_config['corr_features_spearman_list']}")
+            #df = df.drop(columns=self._corr_schema_config['corr_features_spearman_list'], axis=1)
+            df = df.drop(columns=corr_schema_config['corr_features_spearman_list'], axis=1)
             logging.info("corr_features_spearman_list dropped from df data")
             logging.info(f'Columns after deleting spearmen are:{df.columns} ')
 # --------------------------------------------df DATAFRAME TRASFORMATION COMPLETED--------------------------------------------------------------------------------- 

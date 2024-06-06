@@ -265,7 +265,25 @@ class Encoding_categorical_features:
         return self.df
 
 
+class Correlated_independent_feature:
 
+    def __init__(self,data, threshold, method):
+        try:
+            self.data = data
+            self.threshold = threshold
+            self.method = method
+        except Exception as e:
+            raise e
+        
+    def correlation(self):
+        col_corr = set()  # Set of all the names of correlated columns
+        corr_matrix = self.data.corr(method = self.method)
+        for i in range(len(corr_matrix.columns)):
+            for j in range(i):
+                if abs(corr_matrix.iloc[i, j]) > self.threshold: # we are interested in absolute coeff value
+                    colname = corr_matrix.columns[i]  # getting the name of column
+                    col_corr.add(colname)
+        return col_corr
 
 
 

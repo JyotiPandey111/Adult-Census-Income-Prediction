@@ -15,6 +15,7 @@ TEST_FILE_NAME: str = "test.csv"
 PREPROCSSING_OBJECT_FILE_NAME = "preprocessing.pkl"
 MODEL_FILE_NAME = "model.pkl"
 SCHEMA_FILE_PATH = os.path.join("config", "schema.yaml")
+CORR_SCHEMA_FILE_PATH = os.path.join("config", "corr_schema.yaml")
 
 # defined accordingly.
 SCHEMA_DROP_COLS = "drop_columns"
@@ -49,6 +50,7 @@ Data Transformation ralated constant start with DATA_TRANSFORMATION VAR NAME
 DATA_TRANSFORMATION_DIR_NAME: str = "data_transformation"
 DATA_TRANSFORMATION_TRANSFORMED_DATA_DIR: str = "transformed"
 DATA_TRANSFORMATION_TRANSFORMED_OBJECT_DIR: str = "transformed_object"
+DATA_TRANSFORMATION_SPEARMEN_THRESHOLD: float = .25
 
 
 

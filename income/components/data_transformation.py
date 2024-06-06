@@ -1,4 +1,4 @@
-import sys
+import sys, os
 
 import numpy as np
 import pandas as pd
@@ -18,9 +18,9 @@ from income.entity.config_entity import DataTransformationConfig
 from income.exception import IncomeException
 from income.logger import logging
 
-from income.ml.model.estimator import Impute_Missing_Category, TargetValueMapping, NumericaltoCategoricalMapping,CategoricalFeatureTransformer, Encoding_categorical_features
-from income.utils.main_utils import read_yaml_file
-from income.constant.training_pipeline import SCHEMA_FILE_PATH
+from income.ml.model.estimator import Impute_Missing_Category, TargetValueMapping, NumericaltoCategoricalMapping,CategoricalFeatureTransformer, Encoding_categorical_features, Correlated_independent_feature
+from income.utils.main_utils import read_yaml_file,write_yaml_file
+from income.constant.training_pipeline import SCHEMA_FILE_PATH, CORR_SCHEMA_FILE_PATH
 from income.utils.main_utils import save_numpy_array_data, save_object
 
 
@@ -38,6 +38,7 @@ class DataTransformation:
             self.data_validation_artifact = data_validation_artifact
             self.data_transformation_config = data_transformation_config
             self._schema_config = read_yaml_file(SCHEMA_FILE_PATH)
+            self._corr_schema_config = read_yaml_file(CORR_SCHEMA_FILE_PATH)
 
         except Exception as e:
             raise IncomeException(e, sys)
@@ -200,7 +201,14 @@ class DataTransformation:
             logging.info(f'--------------TRAIN TARGET DATAFRAME: {target_feature_train_df[:5]}----------')
 
 
-            input_feature_train_df = input_feature_train_df.drop(columns=self._schema_config['corr_features_spearman_list'], axis=1)
+
+            corr_features_spearman = Correlated_independent_feature(data=input_feature_train_df, threshold=0.25, method = 'spearman').correlation()
+            corr_features_spearman_list= {'corr_features_spearman_list': list(corr_features_spearman)}
+            logging.info(f"\nList of Correlated Independent Variable: {corr_features_spearman_list}")
+            #input_feature_train_df = input_feature_train_df.drop(columns=self._schema_config['corr_features_spearman_list'], axis=1)
+            input_feature_train_df = input_feature_train_df.drop(columns=corr_features_spearman_list['corr_features_spearman_list'], axis=1)
+            write_yaml_file(file_path = CORR_SCHEMA_FILE_PATH ,content= corr_features_spearman_list)
+
             logging.info("corr_features_spearman_list dropped from training data")
             logging.info(f'Columns after deleting spearmen are:{input_feature_train_df.columns} ')
 
@@ -298,8 +306,19 @@ class DataTransformation:
             logging.info(f'{input_feature_test_df.head(5)}')
 
 
-            input_feature_test_df = input_feature_test_df.drop(columns=self._schema_config['corr_features_spearman_list'], axis=1)
-            logging.info("corr_features_spearman_list dropped from test data")
+            #input_feature_test_df = input_feature_test_df.drop(columns=self._schema_config['corr_features_spearman_list'], axis=1)
+            #logging.info("corr_features_spearman_list dropped from test data")
+            #logging.info(f'Columns after deleting spearmen are:{input_feature_test_df.columns} ')
+
+            # ew have to delete same columns which we have deleted from train data
+
+            #corr_features_spearman = Correlated_independent_feature(data=input_feature_test_df, threshold=0.25, method = 'spearman').correlation()
+            #corr_features_spearman_list = []
+            #for ele in corr_features_spearman:
+            #    corr_features_spearman_list.append(ele)
+            logging.info(f"\nList of Correlated Independent Variable: {self._corr_schema_config['corr_features_spearman_list']}")
+            input_feature_test_df = input_feature_test_df.drop(columns=self._corr_schema_config["corr_features_spearman_list"], axis=1)
+            logging.info("corr_features_spearman_list dropped from testing data")
             logging.info(f'Columns after deleting spearmen are:{input_feature_test_df.columns} ')
 
 

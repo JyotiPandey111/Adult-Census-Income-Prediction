@@ -8,10 +8,10 @@ from income.ml.metric.classification_metric import get_classification_score
 from income.ml.model.estimator import IncomeModel
 from income.utils.main_utils import save_object,load_object,write_yaml_file
 from income.constant.training_pipeline import TARGET_COLUMN
-from income.ml.model.estimator import Impute_Missing_Category, TargetValueMapping, NumericaltoCategoricalMapping,CategoricalFeatureTransformer, Encoding_categorical_features
+from income.ml.model.estimator import Impute_Missing_Category, TargetValueMapping, NumericaltoCategoricalMapping,CategoricalFeatureTransformer, Encoding_categorical_features, Correlated_independent_feature
 import pandas  as  pd
 from income.utils.main_utils import read_yaml_file
-from income.constant.training_pipeline import SCHEMA_FILE_PATH
+from income.constant.training_pipeline import SCHEMA_FILE_PATH, CORR_SCHEMA_FILE_PATH
 
 from income.ml.model.estimator import ModelResolver
 
@@ -31,6 +31,8 @@ class ModelEvaluation:
             self.data_validation_artifact=data_validation_artifact
             self.model_trainer_artifact=model_trainer_artifact
             self._schema_config = read_yaml_file(SCHEMA_FILE_PATH)
+            self._corr_schema_config = read_yaml_file(CORR_SCHEMA_FILE_PATH)
+
         except Exception as e:
             raise IncomeException(e,sys)
     
@@ -137,7 +139,20 @@ class ModelEvaluation:
             logging.info(f'--------------df TARGET DATAFRAME: {y_true[:5]}----------')
 
 
-            df = df.drop(columns=self._schema_config['corr_features_spearman_list'], axis=1)
+            # ew have to delete same columns which we have deleted from train data
+
+            #df = df.drop(columns=self._schema_config['corr_features_spearman_list'], axis=1)
+            #logging.info("corr_features_spearman_list dropped from df data")
+            #logging.info(f'Columns after deleting spearmen are:{df.columns} ')
+
+            #corr_features_spearman = Correlated_independent_feature(data=df, threshold=0.25, method = 'spearman').correlation()
+            #corr_features_spearman_list = []
+            #for ele in corr_features_spearman:
+            #    corr_features_spearman_list.append(ele)
+
+            logging.info(f"\nList of Correlated Independent Variable: {self._corr_schema_config['corr_features_spearman_list']}")
+            #df = df.drop(columns=self._corr_schema_config['corr_features_spearman_list'], axis=1)
+            df = df.drop(columns=self._corr_schema_config['corr_features_spearman_list'], axis=1)
             logging.info("corr_features_spearman_list dropped from df data")
             logging.info(f'Columns after deleting spearmen are:{df.columns} ')
 
