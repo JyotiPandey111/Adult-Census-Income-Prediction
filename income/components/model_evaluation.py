@@ -106,9 +106,9 @@ class ModelEvaluation:
 
 
             #ordinal_columns:education, education,age, hours-per-week, capital_gain, capital_loss
-            dictionary_edu={' Some-college':3, ' Bachelors':3, ' Assoc-acdm':2, ' 5th-6th':1, ' 11th':2,' Assoc-voc':2, 
+            dictionary_edu={' Some-college':3, ' Bachelors':3, ' Assoc-acdm':2, ' 11th':2,' Assoc-voc':2, 
                         ' Masters':4, ' HS-grad':2, ' Doctorate':5, ' Prof-school':2,' 10th':2, ' 7th-8th':1, 
-                        'Rare_var':0, ' 9th':2, ' 12th':2}
+                        'Other':1, ' 9th':2, ' 12th':2}
             df= Encoding_categorical_features(df = df, feature='education',dictionary=dictionary_edu).ordinal_label_encoding()
             logging.info(f"Successfully encoded df 'education' by ordinal_label_encoding\n")
 

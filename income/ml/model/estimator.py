@@ -30,7 +30,7 @@ class Impute_Missing_Category:
 
         Return: Modified Dataframe
         """
-        self.data[self.feature]=np.where(self.data[self.feature].isnull(),"Missing",self.data[self.feature])
+        self.data[self.feature]=np.where(self.data[self.feature].isnull(),"Other",self.data[self.feature])
         return self.data
                  
 
@@ -114,7 +114,7 @@ class CategoricalFeatureTransformer:
             temp_df = temp[temp > self.threshold].index
             
             # Replace rare categories with 'Rare_var'
-            self.data[col] = np.where(self.data[col].isin(temp_df), self.data[col], 'Rare_var')
+            self.data[col] = np.where(self.data[col].isin(temp_df), self.data[col], 'Other')
         
         return self.data
 
@@ -145,7 +145,7 @@ class Encoding_categorical_features:
         '''
         Performs One Hot Encoding
         '''
-        df_dumm= pd.get_dummies(self.df[self.feature],drop_first=True,prefix=self.feature,dtype=int)
+        df_dumm= pd.get_dummies(self.df[self.feature],prefix=self.feature,dtype=int)
         logging.info(f'Columns for {self.feature} are:{df_dumm.columns}')
         self.df = pd.concat([self.df,df_dumm],axis=1)
         self.df.drop(axis=1,columns=[self.feature],inplace=True)

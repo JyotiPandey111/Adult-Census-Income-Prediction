@@ -36,6 +36,7 @@ class education(str, Enum):
     AssociateAcademic = ' Assoc-acdm'
     ProfessorSchool = ' Prof-school'
     Doctorate = ' Doctorate'
+    other = 'Other'
     #Preschool =  'Rare-var'
     #FirstToForthGrade = 'Rare-var'
     #FifthToSixthGrade = 'Rare-var'
@@ -50,6 +51,7 @@ class workclass(str,Enum):
    federal = ' Federal-gov'
    nopay = ' Without-pay'
    nowork = ' Never-worked'
+   other = 'Other'
 
 
 
@@ -60,7 +62,7 @@ class maritalstatus(str,Enum):
     div =  ' Divorced'
     sep =  ' Separated'
     mar =  ' Married-spouse-absent'
-    AF =  ' Married-AF-spouse'
+    AF =  'Other'
 
 class occupation(str,Enum): 
    other = ' Other-service'
@@ -75,8 +77,7 @@ class occupation(str,Enum):
    tech = ' Tech-support'
    prot = ' Protective-serv'
    farm = ' Farming-fishing'
-   priv = ' Priv-house-serv'
-   arm = ' Armed-Forces'
+   priv = 'Other'
 
 
 class race(str,Enum): 
@@ -89,6 +90,12 @@ class race(str,Enum):
 class sex(str,Enum):
     fe = ' Female'
     ma = ' Male'
+
+class country(str,Enum):
+    us = ' United-States'
+    mex = ' Mexico'
+    other = 'Other'
+
     
     
 
@@ -115,7 +122,7 @@ class Impute_Missing_Category:
 
         Return: Modified Dataframe
         """
-        self.data[self.feature]=np.where(self.data[self.feature].isnull(),"Missing",self.data[self.feature])
+        self.data[self.feature]=np.where(self.data[self.feature].isnull(),"Other",self.data[self.feature])
         return self.data
                  
 
@@ -199,7 +206,7 @@ class CategoricalFeatureTransformer:
             temp_df = temp[temp > self.threshold].index
             
             # Replace rare categories with 'Rare_var'
-            self.data[col] = np.where(self.data[col].isin(temp_df), self.data[col], 'Rare_var')
+            self.data[col] = np.where(self.data[col].isin(temp_df), self.data[col], 'Other')
         
         return self.data
 

@@ -16,6 +16,7 @@ PREPROCSSING_OBJECT_FILE_NAME = "preprocessing.pkl"
 MODEL_FILE_NAME = "model.pkl"
 SCHEMA_FILE_PATH = os.path.join("config", "schema.yaml")
 CORR_SCHEMA_FILE_PATH = os.path.join("config", "corr_schema.yaml")
+TRAINED_FEATURES_PATH = os.path.join("config", "trained_features.yaml")
 
 # defined accordingly.
 SCHEMA_DROP_COLS = "drop_columns"

@@ -20,7 +20,7 @@ from income.logger import logging
 
 from income.ml.model.estimator import Impute_Missing_Category, TargetValueMapping, NumericaltoCategoricalMapping,CategoricalFeatureTransformer, Encoding_categorical_features, Correlated_independent_feature
 from income.utils.main_utils import read_yaml_file,write_yaml_file
-from income.constant.training_pipeline import SCHEMA_FILE_PATH, CORR_SCHEMA_FILE_PATH
+from income.constant.training_pipeline import SCHEMA_FILE_PATH, CORR_SCHEMA_FILE_PATH, TRAINED_FEATURES_PATH
 from income.utils.main_utils import save_numpy_array_data, save_object
 
 
@@ -39,6 +39,7 @@ class DataTransformation:
             self.data_transformation_config = data_transformation_config
             self._schema_config = read_yaml_file(SCHEMA_FILE_PATH)
             self._corr_schema_config = read_yaml_file(CORR_SCHEMA_FILE_PATH)
+            self._trained_features_config = read_yaml_file(TRAINED_FEATURES_PATH)
 
         except Exception as e:
             raise IncomeException(e, sys)
@@ -169,9 +170,9 @@ class DataTransformation:
 
 
             #ordinal_columns:education, education,age, hours-per-week, capital_gain, capital_loss
-            dictionary_edu={' Some-college':3, ' Bachelors':3, ' Assoc-acdm':2, ' 5th-6th':1, ' 11th':2,' Assoc-voc':2, 
+            dictionary_edu={' Some-college':3, ' Bachelors':3, ' Assoc-acdm':2, ' 11th':2,' Assoc-voc':2, 
                         ' Masters':4, ' HS-grad':2, ' Doctorate':5, ' Prof-school':2,' 10th':2, ' 7th-8th':1, 
-                        'Rare_var':0, ' 9th':2, ' 12th':2}
+                        'Other':1, ' 9th':2, ' 12th':2}
             train_df= Encoding_categorical_features(df = train_df, feature='education',dictionary=dictionary_edu).ordinal_label_encoding()
             logging.info(f"Successfully encoded train 'education' by ordinal_label_encoding\n")
 
@@ -208,6 +209,8 @@ class DataTransformation:
             #input_feature_train_df = input_feature_train_df.drop(columns=self._schema_config['corr_features_spearman_list'], axis=1)
             input_feature_train_df = input_feature_train_df.drop(columns=corr_features_spearman_list['corr_features_spearman_list'], axis=1)
             write_yaml_file(file_path = CORR_SCHEMA_FILE_PATH ,content= corr_features_spearman_list)
+            write_yaml_file(file_path = TRAINED_FEATURES_PATH, content = {"trained_features":list(input_feature_train_df.columns)})
+
 
             logging.info("corr_features_spearman_list dropped from training data")
             logging.info(f'Columns after deleting spearmen are:{input_feature_train_df.columns} ')
@@ -275,9 +278,9 @@ class DataTransformation:
 
 
             #ordinal_columns:education, education,age, hours-per-week, capital_gain, capital_loss
-            dictionary_edu={' Some-college':3, ' Bachelors':3, ' Assoc-acdm':2, ' 5th-6th':1, ' 11th':2,' Assoc-voc':2, 
+            dictionary_edu={' Some-college':3, ' Bachelors':3, ' Assoc-acdm':2, ' 11th':2,' Assoc-voc':2, 
                         ' Masters':4, ' HS-grad':2, ' Doctorate':5, ' Prof-school':2,' 10th':2, ' 7th-8th':1, 
-                        'Rare_var':0, ' 9th':2, ' 12th':2}
+                        'Other':1, ' 9th':2, ' 12th':2}
             test_df= Encoding_categorical_features(df = test_df, feature='education',dictionary=dictionary_edu).ordinal_label_encoding()
             logging.info(f"Successfully encoded test 'education' by ordinal_label_encoding\n")
 
@@ -316,7 +319,7 @@ class DataTransformation:
             #corr_features_spearman_list = []
             #for ele in corr_features_spearman:
             #    corr_features_spearman_list.append(ele)
-            logging.info(f"\nList of Correlated Independent Variable: {self._corr_schema_config['corr_features_spearman_list']}")
+            #logging.info(f"\nList of Correlated Independent Variable: {self._corr_schema_config['corr_features_spearman_list']}")
             input_feature_test_df = input_feature_test_df.drop(columns=self._corr_schema_config["corr_features_spearman_list"], axis=1)
             logging.info("corr_features_spearman_list dropped from testing data")
             logging.info(f'Columns after deleting spearmen are:{input_feature_test_df.columns} ')
