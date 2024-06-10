@@ -18,11 +18,11 @@ from fastapi import FastAPI, File, Request, UploadFile, Path
 
 from income.pipeline.prediction_pipeline import relationship, education, workclass, occupation, race,sex, maritalstatus, country
 from income.utils.main_utils import read_yaml_file
-from income.constant.training_pipeline import SCHEMA_FILE_PATH, CORR_SCHEMA_FILE_PATH, TRAINED_FEATURES_PATH
+from income.constant.training_pipeline import SCHEMA_FILE_PATH, CORR_SCHEMA_FILE_PATH, TRAINED_FEATURES_PATH, PREDICTION_HTML_PATH
 import os
 import pandas as pd
 from income.pipeline.prediction_pipeline import Impute_Missing_Category, TargetValueMapping, NumericaltoCategoricalMapping,CategoricalFeatureTransformer, Encoding_categorical_features, Correlated_independent_feature
-
+import webbrowser 
 
 env_file_path=os.path.join(os.getcwd(),"env.yaml")
 
@@ -93,7 +93,7 @@ async def predict_route( age : int , workclass:workclass , education : education
                 "capital-gain" : capgain,
                 "capital-loss" : caploss,
                 "hours-per-week" : hours,
-                "country" : country
+                "country" : country.value
                 }
             
             logging.info(f"\n\nDataRecord from FastAPI: {json_data} \n type is: {type(json_data)}\n all keys are : {json_data.keys()}\n items: {json_data.items()} \n race key has value: {json_data['race']} \n education key has value: {json_data['education'] } \n country key has value: {json_data['country']}")
@@ -114,6 +114,7 @@ async def predict_route( age : int , workclass:workclass , education : education
             df = pd.DataFrame(data = dict_record, index=[0])
             logging.info(f"\n \n DataRecord: {df}")
             logging.info(f'\n Columns are:{df.columns} ')
+            html_df = df
 
             # FE needed
             #---------------------------------------------- TRASFORMATION IN df DATAFRAME--------------------------------------------------------
@@ -216,17 +217,154 @@ async def predict_route( age : int , workclass:workclass , education : education
             y_pred = model.predict(df)
             df['predicted_column'] = y_pred
             logging.info(f"model predicted: {df['predicted_column']}")
-            df['predicted_column'].replace({0 : ' <=50K', 1 : ' >50K'},inplace=True)
-                    
+            #df['predicted_column'].replace({0 : ' <=50K', 1 : ' >50K'},inplace=True)
+
+            # Convert DataFrame to HTML for key-value display
+            logging.info("Initiating designing HTML file")
+            html_table = html_df.T.reset_index().to_html(header=False, index=False, classes='table table-hover table-bordered')
+            if (df['predicted_column'] == 0).bool():
+                result= "Our Model Prediction: Income is Less than 50K"
+            else:
+                result = "Our Model Prediction: Income is greater than 50K"
+            
+            # HTML Template
+            html_template = f"""
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Adult Census Income Prediction</title>
+                <!-- Bootstrap CSS for styling -->
+                <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+                <!-- Google Fonts for modern typography -->
+                <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+                <!-- Custom CSS for additional styling -->
+                <style>
+                    body {{
+                        font-family: 'Roboto', sans-serif;
+                        margin: 0;
+                        background-color: #f8f9fa;
+                    }}
+                    .navbar {{
+                        background-color: #007bff;
+                        color: white;
+                        padding: 15px 20px;
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                    }}
+                    .navbar h1 {{
+                        margin: 0;
+                        font-size: 1.8rem;
+                        font-weight: 700;
+                    }}
+                    .container {{
+                        padding: 40px 20px;
+                        max-width: 800px;
+                        margin: 0 auto;
+                    }}
+                    h2 {{
+                        color: #343a40;
+                        text-align: center;
+                        margin-bottom: 20px;
+                        font-size: 2rem;
+                    }}
+                    .table-container {{
+                        margin-top: 20px;
+                        display: flex;
+                        justify-content: center;
+                    }}
+                    .table {{
+                        width: 100%;
+                        border-collapse: collapse;
+                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                        background-color: #ffffff;
+                        border-radius: 8px;
+                        overflow: hidden;
+                        transition: transform 0.3s ease;
+                    }}
+                    .table:hover {{
+                        transform: scale(1.02);
+                    }}
+                    .table th, .table td {{
+                        padding: 15px;
+                        border: 1px solid #dee2e6;
+                    }}
+                    .table th {{
+                        background-color: #007bff;
+                        color: white;
+                        text-align: left;
+                        font-weight: 700;
+                    }}
+                    .table td {{
+                        background-color: #ffffff;
+                        color: #000000;
+                        text-align: left;
+                    }}
+                    .table-hover tbody tr:hover {{
+                        background-color: #f1f1f1;
+                    }}
+                    .footer {{
+                        margin-top: 50px;
+                        text-align: center;
+                        font-size: 0.9em;
+                        color: #6c757d;
+                        padding: 20px;
+                        background-color: #e9ecef;
+                    }}
+                    .footer p {{
+                        margin: 0;
+                    }}
+                </style>
+            </head>
+            <body>  
+                <div class="navbar">
+                    <h1>Adult Census Income Prediction</h1>
+                </div>
+                <div class="container">
+                    <h2>Your Entries are:</h2>
+                    <div class="table-container">
+                        {html_table}
+                    </div>
+                    <h2>{result}</h2>
+                    <div class="footer">
+                        <p>&copy; 2024 Your Company. All rights reserved.</p>
+                    </div>
+                </div>
+                <!-- jQuery and Bootstrap JS for interactive features -->
+                <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+                <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+                <!-- Custom JS for additional functionality -->
+                <script>
+                    $(document).ready(function() {{
+                        console.log("Document is ready!");
+                        // Add your custom JavaScript here
+                    }});
+                </script>
+            </body>
+            </html>
+            """    
+
+            # Save the HTML to a file
+            with open(PREDICTION_HTML_PATH, 'w') as file:
+                file.write(html_template)
+        
+            
             #decide how to return file to user.
             if (df['predicted_column'] == 0).bool():
-                return Response("Income is Less than 50 ")
+                return Response("Income is Less than 50K")
             else: 
                 return Response("Income is greater than 50K")
+            
+            
+            
     
+            
         
-        #convert csv file to dataframe
-        #df = pd.read_csv(file.file)
+        
+        
 
     
     except Exception as e:
@@ -254,4 +392,6 @@ if __name__=="__main__":
 
     # uncommnet karo
     app_run(app, host=APP_HOST, port=APP_PORT)
+    webbrowser.open_new_tab(PREDICTION_HTML_PATH)
+     
     
