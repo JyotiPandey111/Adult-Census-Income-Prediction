@@ -1,0 +1,26 @@
+trained_features:
+- relationship_ Husband
+- relationship_ Other-relative
+- relationship_ Wife
+- race_ Amer-Indian-Eskimo
+- race_ Asian-Pac-Islander
+- race_ Black
+- race_Other
+- country_ Mexico
+- marital-status_ Separated
+- marital-status_ Widowed
+- occupation_ Prof-specialty
+- occupation_ Exec-managerial
+- occupation_ Sales
+- occupation_ Craft-repair
+- occupation_ Other-service
+- occupation_Other
+- occupation_ Machine-op-inspct
+- occupation_ Transport-moving
+- occupation_ Handlers-cleaners
+- occupation_ Farming-fishing
+- occupation_ Tech-support
+- occupation_ Protective-serv
+- hours-per-week_ordinal
+- capital-gain_ordinal
+- capital-loss_ordinal
