@@ -48,6 +48,7 @@ categorical_columns:
   - hours-per-week
   - country
 
+
 nominal_columns:
   - marital-status
   - relationship
@@ -84,28 +85,6 @@ drop_columns:
 # - bq_000
 
 
-corr_features_spearman_list:
-  - occupation_ Protective-serv
-  - race_ White
-  - workclass_ State-gov
-  - education_ordinal
-  - marital-status_ Divorced
-  - hours-per-week_ordinal
-  - age_ordinal
-  - country_ United-States
-  - relationship_ Wife
-  - workclass_Missing
-  - workclass_ Federal-gov
-  - marital-status_ Never-married
-  - occupation_Missing
-  - workclass_ Local-gov
-  - occupation_ Adm-clerical
-  - marital-status_ Married-civ-spouse
-  - relationship_ Unmarried
-  - country_Rare_var
-  - workclass_ Self-emp-inc
-  - workclass_ Self-emp-not-inc
-
 
 relationship:
   - ' Unmarried'
@@ -129,7 +108,7 @@ education:
   - ' 9th'
   - ' 7th-8th'
   - ' Doctorate'
-  #- 'Rare-var'
+  #- 'Rare-var' > "Other"
   #- ' 1st-4th'
   #- ' Preschool'
   #- ' 5th-6th'
@@ -143,8 +122,10 @@ workclass:
  - ' State-gov'
  - ' Self-emp-inc'
  - ' Federal-gov'
+ # rare > "Other"
  - ' Without-pay'
  - ' Never-worked'
+ # missing > 'Other'
 
 maritalstatus: 
  - ' Never-married'
@@ -153,6 +134,7 @@ maritalstatus:
  - ' Divorced'
  - ' Separated'
  - ' Married-spouse-absent'
+ # rare > "Other"
  - ' Married-AF-spouse'
 
 
@@ -169,8 +151,10 @@ occupation:
  - ' Tech-support'
  - ' Protective-serv'
  - ' Farming-fishing'
+ #rare > ' Other'
  - ' Priv-house-serv'
  - ' Armed-Forces'
+ # missing
 
 
 race: 
@@ -178,12 +162,16 @@ race:
  - ' White'
  - ' Asian-Pac-Islander'
  - ' Amer-Indian-Eskimo'
+ # rare
  - ' Other'
 
 sex:
  - ' Female'
  - ' Male'
 
-
+country:
+ - ' United-States'
+ - ' Mexico'
+ - 'Other'
 
  
