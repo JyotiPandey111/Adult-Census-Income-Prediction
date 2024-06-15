@@ -387,7 +387,7 @@ def main():
 
 if __name__=="__main__":
     # comment karo
-    main()
+    #main()
     # set_env_variable(env_file_path)
 
     # uncommnet karo
