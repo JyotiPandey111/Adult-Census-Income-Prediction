@@ -26,10 +26,10 @@
 	3. AmazonS3FullAccess
 
 3.Create a s3 bukcet in ap-south-1
-	bucket name: scania-sensor-pipeline
+	bucket name: income-prediction-model-ver1
 	
 4. ECR repo to store/save docker image
-	566373416292.dkr.ecr.ap-south-1.amazonaws.com/sensor-fault
+	992382421316.dkr.ecr.ap-south-1.amazonaws.com/income-prediction
 	
 5. EC2 machine  Ubuntu  Created
 
@@ -43,6 +43,7 @@
 	#required
 	curl -fsSL https://get.docker.com -o get-docker.sh
 	sudo sh get-docker.sh
+	docker
 	sudo usermod -aG docker ubuntu
 	newgrp docker
 	
