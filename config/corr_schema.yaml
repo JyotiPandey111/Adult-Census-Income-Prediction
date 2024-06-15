@@ -1,22 +1,21 @@
 corr_features_spearman_list:
-- relationship_ Not-in-family
+- sex_ Female
+- relationship_ Own-child
+- marital-status_ Married-civ-spouse
 - workclass_ Federal-gov
 - workclass_ Private
+- education_ordinal
+- marital-status_ Never-married
+- workclass_Other
+- marital-status_ Divorced
+- workclass_ State-gov
 - workclass_ Self-emp-inc
-- sex_ Female
-- country_ United-States
+- sex_ Male
+- age_ordinal
 - workclass_ Local-gov
 - race_ White
-- age_ordinal
-- workclass_Other
-- workclass_ Self-emp-not-inc
-- relationship_ Own-child
-- workclass_ State-gov
-- marital-status_ Divorced
-- occupation_ Adm-clerical
-- country_Other
-- marital-status_ Married-civ-spouse
 - relationship_ Unmarried
-- sex_ Male
-- marital-status_ Never-married
-- education_ordinal
+- country_Other
+- relationship_ Not-in-family
+- workclass_ Self-emp-not-inc
+- country_ United-States
