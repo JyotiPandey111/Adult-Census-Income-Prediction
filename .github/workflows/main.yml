@@ -86,9 +86,9 @@ jobs:
         run: |
          docker pull ${{secrets.AWS_ECR_LOGIN_URI}}/${{ secrets.ECR_REPOSITORY_NAME }}:latest
 
-      - name: Stop and remove income container if running
-        run: |
-         docker ps -q --filter "name=income" | grep -q . && docker stop income && docker rm -fv income
+     # - name: Stop and remove income container if running
+     #   run: |
+     #    docker ps -q --filter "name=income" | grep -q . && docker stop income && docker rm -fv income
        
       - name: Run Docker Image to serve users
         run: |
