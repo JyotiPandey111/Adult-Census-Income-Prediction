@@ -11,9 +11,8 @@ trained_features:
 - marital-status_ Widowed
 - occupation_ Prof-specialty
 - occupation_ Exec-managerial
-- occupation_ Adm-clerical
-- occupation_ Craft-repair
 - occupation_ Sales
+- occupation_ Craft-repair
 - occupation_ Other-service
 - occupation_Other
 - occupation_ Machine-op-inspct
