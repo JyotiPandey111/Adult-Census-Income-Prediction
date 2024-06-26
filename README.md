@@ -17,7 +17,6 @@ Approach: The classical machine learning tasks like Data Exploration, Data Clean
 2. AWS EC2
 3. AWS ECR
 4. Git Actions
-5. Terraform
 
 
 ## How to run?
