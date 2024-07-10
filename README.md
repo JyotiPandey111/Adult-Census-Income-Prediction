@@ -98,4 +98,4 @@ http://localhost:8080/predict
 
 ### Step 9. Output prediction
 
-(https://github.com/JyotiPandey111/Adult-Census-Income-Prediction/blob/main/Flowcharts/Adult%20Census%20Income%20Prediction%20HTML%20Output.pdf)
+[HTML Output for Prediction made by Model](https://github.com/JyotiPandey111/Adult-Census-Income-Prediction/blob/main/Flowcharts/Adult%20Census%20Income%20Prediction%20HTML%20Output.pdf)
