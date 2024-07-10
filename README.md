@@ -68,7 +68,7 @@ MONGODB_URL=<MONGODB_URL>
 
 ### Step 5 - Run the application server
 ```bash
-python app.py
+python main.py
 ```
 
 ### Step 6. Train application
