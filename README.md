@@ -71,14 +71,31 @@ MONGODB_URL=<MONGODB_URL>
 python main.py
 ```
 
-### Step 6. Train application
+### Step 6. User Interface:
+- Train Route
+- Prediction Route
+
+![image](https://github.com/JyotiPandey111/Adult-Census-Income-Prediction/blob/main/Flowcharts/Fast%20API%20User%20Interface.png)
+
+
+### Step 7. Train application
+
+
 ```bash
 http://localhost:8080/train
 
 ```
+![image](https://github.com/JyotiPandey111/Adult-Census-Income-Prediction/blob/main/Flowcharts/Training%20Successful.png)
 
-### Step 7. Prediction application
+### Step 8. Prediction application
 ```bash
 http://localhost:8080/predict
 
 ```
+![image](https://github.com/JyotiPandey111/Adult-Census-Income-Prediction/blob/main/Flowcharts/User%20Interface%20Entries%20by%20User.png)
+
+![image](https://github.com/JyotiPandey111/Adult-Census-Income-Prediction/blob/main/Flowcharts/Prediction%20made%20by%20Model.png)
+
+### Step 9. Output prediction
+
+![image]()
